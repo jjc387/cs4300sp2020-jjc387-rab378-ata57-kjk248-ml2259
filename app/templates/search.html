@@ -1,39 +1,57 @@
 <html>
-    <head>
-        <link rel="stylesheet" href="/static/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/main.css">
-    </head>
-    <body>
-        <div class="topcorner">
-            <p>Project Name: {{ name }}</p>
-            <p>Student Name: ({{ netid }})</p>
+
+<head>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/main.css">
+</head>
+
+<body>
+    <div class="topcorner">
+        <p>Project Name: {{ name }}</p>
+        <p>Student Name: ({{ netid }})</p>
+    </div>
+    <form class="form-inline global-search">
+        <h1 style="font-size: 55px; font-family:Futura; color: #4285F4">
+            Check your favorite wine flavors
+        </h1>
+
+        <br><br>
+
+        <div class="form-group" id="flavor_form">
+            <input id="flavor" type="checkbox" name="dry"> Dry
+            <input id="flavor" type="checkbox" name="sweet"> Sweet
+            <input id="flavor" type="checkbox" name="acidic"> Acidic
+            <input id="flavor" type="checkbox" name="spice"> Spice
+            <input id="flavor" type="checkbox" name="fruit"> Fruit
+            <input id="flavor" type="checkbox" name="vanilla"> Vanilla
+            <input id="flavor" type="checkbox" name="ripe"> Ripe
+            <input id="flavor" type="checkbox" name="earthy"> Earthy
         </div>
-        <form class="form-inline global-search">
-            <h1 style="font-size: 55px; font-family:Futura; color: #4285F4">
-                C
-                <span style="color: #EA4335; ">S</span>
-                <span style="color: #FBBC05; ">4</span>
-                3
-                <span style="color: #34A853; ">0</span>
-                <span style="color: #EA4335; ">0</span>
-            </h1>
-            
-            <br><br>
-            
-            <div class="form-group">
-                <input id="input" type="text" name="search" class="form-control" placeholder="Your Input">
-            </div>
-            <button type="submit" class="btn btn-info"> Go! </button>
-        </form>
-        <form class="form-inline global-search">
+        <button type="submit" onclick="getQuery()" class="btn btn-info"> Go! </button>
+        <input type="hidden" id="query" name="search" value=[]>
+    </form>
+    <form class="form-inline global-search">
         {% if data %}
-            <h1>{{output_message}}</h1>
-            {% for d in data %}  
-                <br>
-                <p>{{d}}</p>
-            {% endfor %}
+        <h1>{{output_message}}</h1>
+        {% for d in data %}
+        <br>
+        <p>{{d}}</p>
+        {% endfor %}
         {% endif %}
-        </form>
-    </body>
+    </form>
+    <script>
+        function getQuery() {
+            let all = document.querySelectorAll('div#flavor_form input[type=checkbox]');
+            let query = [];
+            [...all].forEach(element => {
+                let name = element.name;
+                if (element.checked) {
+                    query.push(name);
+                }
+            });
+            document.getElementById("query").value = query;
+        }
+    </script>
+</body>
 
 </html>

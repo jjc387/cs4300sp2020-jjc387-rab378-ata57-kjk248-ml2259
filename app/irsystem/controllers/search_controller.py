@@ -6,9 +6,14 @@ project_name = "Where to Travel based on Wine Preferences"
 net_id = "Jessica Chen: jjc387, Rhea Bansal: rab378, Amani Ahmed: ata57, \
 Kylie Kurz: kjk248, Mindy Lee: ml2259"
 
+
 @irsystem.route('/', methods=['GET'])
+def home():
+	return render_template('search.html', name=project_name, netid=net_id, flavors=[])
+
+@irsystem.route('/search', methods=['GET'])
 def search():
-	query = request.args.get('search')
+	query = request.args.get('flavors')
 	if not query:
 		data = []
 		output_message = ''

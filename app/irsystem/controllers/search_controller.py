@@ -1,7 +1,9 @@
 from . import *  
+import nltk
+from nltk import word_tokenize
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
-from app.irsystem.controllers.wine_data import wine_dict
+from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict
 from sklearn.metrics.pairwise import cosine_similarity
 
 project_name = "Wine and Beer Food Pairings"
@@ -21,12 +23,19 @@ def search():
 
 
 
-def create_OR_list(wine_dict, query):
+def create_OR_list(query):
 	"""
 	checks to see if ANY of the query terms are in the review
 
 	returns: list of indexs
 	"""
+	q_lst = word_tokenize(query)
+	word_idx = []
+	for word in q_lst:
+		word_idx.append(wine_words_index_dict[word])
+	for idx in word_idx:
+		#get columns and check which rows are non 0 by summing over the rows.
+
 
 
 def get_cos_sim(query, reviews, relevant_doc_index):

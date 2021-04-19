@@ -3,7 +3,7 @@ import nltk
 from nltk import word_tokenize
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
-from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict, vec
+from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict, vec, idf
 from sklearn.metrics.pairwise import cosine_similarity
 
 project_name = "Wine and Beer Food Pairings"
@@ -31,8 +31,9 @@ def create_OR_list(q_lst):
 	"""
 	word_idx = []
 	for word in q_lst:
-		word_idx.append(wine_words_index_dict[word])
-	cols = tfidf_wine_matrix[:, q_lst]
+		if word in wine_words_index_dict:
+			word_idx.append(wine_words_index_dict[word])
+	cols = tfidf_wine_matrix[:, word_idx]
 	sum_row = np.sum(cols, axis = 0)
 	postings = np.nonzero(sum_row)[0]
 	return postings
@@ -45,6 +46,7 @@ def get_cos_sim(query, relevant_doc_index):
 	returns: {index: score}
 	"""
 	scores = {}
+	query = query.reshape(1, -1) 
 	for doc in relevant_doc_index:
 		curr_review = tfidf_wine_matrix[doc]
 		cos_sim = cosine_similarity(query, curr_review)
@@ -93,10 +95,19 @@ def cos_sim_reviews(input_terms):
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
 	#TODO: tokenize query and put in vector format here
-	query_vec = vec(input_terms)
-	print(query_vec)
+	query_vec = np.zeros(len(wine_words_index_dict))
 	query_tok = word_tokenize(input_terms)
 	print(query_tok)
+
+	for tok in query_tok:
+		if tok in wine_words_index_dict:
+			idx = wine_words_index_dict[tok]
+			query_vec[idx] += 1
+	
+	for tok in set(query_tok):
+		if tok in wine_words_index_dict:
+			idx = wine_words_index_dict[tok]
+			query_vec[idx] = query_vec[idx] * idf[idx]
 
 	relevant_docs = create_OR_list(query_tok)
 	cos_sims = get_cos_sim(query_vec, relevant_docs)
@@ -114,6 +125,7 @@ def cos_sim_reviews(input_terms):
 
 	top_5_info = {k: locs[k] for k in top_5_loc}
 	output = formatted_output(top_5_info)
+	print(output)
 	return output
 
 ######################## formatting output #########################

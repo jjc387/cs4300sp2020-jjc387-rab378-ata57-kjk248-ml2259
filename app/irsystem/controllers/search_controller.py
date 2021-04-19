@@ -20,7 +20,7 @@ def search():
 
 
 
-def create_OR_list(wine_dict, ):
+def create_OR_list(wine_dict, query):
 	"""
 	checks to see if ANY of the query terms are in the review
 
@@ -28,24 +28,19 @@ def create_OR_list(wine_dict, ):
 	"""
 
 
-
 def get_cos_sim(input, reviews, relevant_doc_index):
 	"""
 	input: string- the users input
-	reviews: user reviews 
+	reviews: user reviews (wine_dict)
 	relevant_doc_index: list of relevant docs
+	returns: {index: score}
 	"""
 
-def top_locations():
-	"""
-	get top 100 locations 
-	return in format {location : [(score, row_number)]}
-	"""
 
-def location_frequency():
+def location_frequency(top_locations_dict):
 	"""
-	get frequencies of the top 100 
-	return {location : (score, [index])}
+	get frequencies of the top 100 locations
+	return {location : (frequency, [index])}
 	"""
 
 def cos_sim_reviews(input_terms, wine_dict):
@@ -56,11 +51,18 @@ def cos_sim_reviews(input_terms, wine_dict):
 	returns a dictionary of locations in format {location : [(score, row_number)]} 
 	"""
 	# call create_OR_list and get list of releveant index
-	# do cos_sim for the relevant docs  call get_cos_sim
+	# do cos_sim for the relevant docs  call get_cos_sim (return as a dict)
+	# create tuple list from get_cos_sim
 	# go through and create  {location : [(score, row_number)]} for top 100 cos_sim results
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
 
+######################## formatting output #########################
+
+def get_recommended_varieties(ids, wine_dict):
+	"""
+	return set of varieties suggested
+	"""
 
 def formatted_output(locations_dict):
 	"""

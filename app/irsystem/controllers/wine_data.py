@@ -1,7 +1,5 @@
 import pandas as pd
-import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk import word_tokenize
 
 
 url = "https://raw.githubusercontent.com/jjc387/cs4300sp2021-jjc387-rab378-ata57-kjk248-ml2259/mindy/app/irsystem/winereviews.csv"
@@ -15,6 +13,6 @@ tfidf_wine_matrix = vec.fit_transform([wine_dict[d]['description'] for d in wine
 idf = vec.idf_ 
 wine_words = vec.get_feature_names()
 wine_words_index_dict ={word:index for index, word in enumerate(wine_words)}
-print(wine_words_index_dict) 
+# print(wine_words_index_dict) 
 
 

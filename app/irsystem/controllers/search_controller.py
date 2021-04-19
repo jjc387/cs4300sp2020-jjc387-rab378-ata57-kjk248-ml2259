@@ -1,6 +1,7 @@
 from . import *  
-import nltk
-from nltk import word_tokenize
+import re
+# import nltk
+# from nltk import word_tokenize
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict, vec, idf
@@ -35,12 +36,15 @@ def create_OR_list(q_lst):
 	returns: list of indexs
 	"""
 	word_idx = []
+	cols = []
 	for word in q_lst:
 		if word in wine_words_index_dict:
 			word_idx.append(wine_words_index_dict[word])
-	cols = tfidf_wine_matrix[:, word_idx]
+			col = tfidf_wine_matrix[:, wine_words_index_dict[word]]
+			cols.append(col)
 	sum_row = np.sum(cols, axis = 0)
 	postings = np.nonzero(sum_row)[0]
+	postings.tolist()
 	return postings
 
 def get_cos_sim(query, relevant_doc_index):
@@ -54,7 +58,8 @@ def get_cos_sim(query, relevant_doc_index):
 	query = query.reshape(1, -1) 
 	for doc in relevant_doc_index:
 		curr_review = tfidf_wine_matrix[doc]
-		cos_sim = cosine_similarity(query, curr_review)
+		c_review = curr_review.reshape(1, -1) 
+		cos_sim = cosine_similarity(query, c_review)
 		scores[doc] = cos_sim
 	return scores
 
@@ -70,15 +75,14 @@ def location_frequency(scores_dict):
 	
 	i = 0
 	y = 500
-	while i < y and i < len(scores_list):
+	while i < len(scores_list):
 		doc, score = scores_list[i]
 		prov = wine_dict[doc]['province']
 		if prov not in locs:
-			locs[prov]['id'] = [doc]
-			locs[prov]['frequency'] = 1
+			locs[prov] = [doc]
 		else:
-			locs[prov]['id'].append(doc)
-			locs[prov]['frequency'] += 1
+			locs[prov].append(doc)
+			# locs[prov]['frequency'] += 1
 
 		i += 1
 		if i == y:
@@ -100,9 +104,9 @@ def cos_sim_reviews(input_terms):
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
 	#TODO: tokenize query and put in vector format here
-	query_vec = np.zeros(len(wine_words_index_dict))
-	query_tok = word_tokenize(input_terms)
-	print(query_tok)
+	query_vec = np.zeros((len(wine_words_index_dict,)))
+	#took this from our code from A1
+	query_tok = re.findall(r"[a-z]+", input_terms)
 
 	for tok in query_tok:
 		if tok in wine_words_index_dict:
@@ -113,13 +117,12 @@ def cos_sim_reviews(input_terms):
 		if tok in wine_words_index_dict:
 			idx = wine_words_index_dict[tok]
 			query_vec[idx] = query_vec[idx] * idf[idx]
-
 	relevant_docs = create_OR_list(query_tok)
 	cos_sims = get_cos_sim(query_vec, relevant_docs)
 	locs = location_frequency(cos_sims)
 
-	loc_freq = [(x, locs[x]['frequency']) for x in locs]
-	loc_freq = sorted(loc_freq, key = lambda x: x[1], reverse=True)
+	loc_freq = [(x, len(locs[x])) for x in locs]
+	loc_freq = sorted(loc_freq, key = lambda x: len(x), reverse=True)
 
 	size = 5
 	#if less than 5 distinct locations are returned
@@ -130,7 +133,6 @@ def cos_sim_reviews(input_terms):
 
 	top_5_info = {k: locs[k] for k in top_5_loc}
 	output = formatted_output(top_5_info)
-	print(output)
 	return output
 
 ######################## formatting output #########################
@@ -152,10 +154,12 @@ def formatted_output(locations_dict):
 	"""
 	data = []
 	for loc in locations_dict:
-		variety_lst = list(get_recommended_varieties(locations_dict[loc]['id']))
-		x = ', '.join(variety_lst[:len(variety_lst)-1])
-		x = '{}, and {}'.format(x, variety_lst[len(variety_lst)-1])
-		val = "visit {} , and while you are there you should consider these varities of wines: {}!".format(loc, x)
+		variety_lst = list(get_recommended_varieties(locations_dict[loc]))
+		if len(variety_lst) > 5:
+			variety_lst = variety_lst[1:6]
+		x = ', '.join(variety_lst)
+		
+		val = "visit {}, and while you are there you should consider these varities of wines: {}!".format(loc, x)
 		data.append(val)
 	return data
 

@@ -13,6 +13,6 @@ wine_dict = df.to_dict(orient='index')
 vec = TfidfVectorizer(stop_words='english',max_df=0.75,min_df= 1,max_features=10000)
 tfidf_wine_matrix = vec.fit_transform([wine_dict[d]['description'] for d in wine_dict]).toarray()
 wine_words = vec.get_feature_names()
-wine_words_index_dict ={inex:word for index, word in enumerate(wine_words)} 
+wine_words_index_dict ={index:word for index, word in enumerate(wine_words)} 
 
 

@@ -38,7 +38,7 @@ def create_OR_list(query):
 
 
 
-def get_cos_sim(query, reviews, relevant_doc_index):
+def get_cos_sim(query, relevant_doc_index):
 	"""
 	input: string- the users input
 	reviews: user reviews (wine_dict)
@@ -47,7 +47,7 @@ def get_cos_sim(query, reviews, relevant_doc_index):
 	"""
 	scores = {}
 	for doc in relevant_doc_index:
-		curr_review = reviews[doc]
+		curr_review = tfidf_wine_matrix[doc]
 		cos_sim = cosine_similarity(query, curr_review)
 		scores[doc] = cos_sim
 	return scores
@@ -60,7 +60,7 @@ def location_frequency(scores_dict):
 	"""
 	locs = {}
 	scores_list = [(x, scores_dict[x]) for x in scores_dict]
-	scores_list = sorted(scores_list, key = lambda x: x[1])
+	scores_list = sorted(scores_list, key = lambda x: x[1], reverse=True)
 	
 	i = 0
 	y = 500
@@ -93,10 +93,29 @@ def cos_sim_reviews(input_terms, wine_dict):
 	# go through and create  {location : [(score, row_number)]} for top 100 cos_sim results
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
+	#TODO: tokenize query and put in vector format here
+
+	relevant_docs = create_OR_list(query)
+	cos_sims = get_cos_sim(query, relevant_docs)
+	locs = location_frequency(cos_sims)
+
+	loc_freq = [(x, locs[x]['frequency']) for x in locs]
+	loc_freq = sorted(loc_freq, key = lambda x: x[1], reverse=True)
+
+	size = 5
+	#if less than 5 distinct locations are returned
+	if len(locs) < 5:
+		size = len(locs)
+
+	top_5_loc = [x[0] for x in loc_freq[:size]]
+
+	top_5_info = {k: locs[k] for k in top_5_loc}
+	output = formatted_output(top_5_info)
+	return output
 
 ######################## formatting output #########################
 
-def get_recommended_varieties(ids, wine_dict):
+def get_recommended_varieties(ids, wine_dict=wine_dict):
 	"""
 	return set of varieties suggested
 	"""

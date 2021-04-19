@@ -118,11 +118,22 @@ def get_recommended_varieties(ids, wine_dict=wine_dict):
 	"""
 	return set of varieties suggested
 	"""
+	variety_set = set()
+	for i in ids:
+		variety_set.add(wine_dict[i]["variety"])
+	return variety_set
 
 def formatted_output(locations_dict):
 	"""
 	takes in the created dictionary and formats the output to be more user readable
 	location, "you should consider these wines" + wines 
-
+	{location : (frequency, [index])}
 	"""
+	data = []
+	for loc in locations_dict:
+		variety_lst = list(get_recommended_varieties(locations_dict[loc]['id']))
+		data.append("visit "+  loc+ ", and while you are there you should consider these varities of wines " + ", ".join(var_lst) + "!")
+	return data
+
+
 

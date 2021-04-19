@@ -1,6 +1,7 @@
 from . import *  
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
+from app.irsystem.controllers.wine_data import wine_dict
 
 project_name = "Wine and Beer Food Pairings"
 net_id = "Jessica Chen: jjc387, Rhea Bansal: rab378, Amani Ahmed: ata57, \
@@ -18,37 +19,53 @@ def search():
 	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
-def get_cos_sim(input, review):
+
+def create_OR_list(wine_dict, ):
+	"""
+	checks to see if ANY of the query terms are in the review
+
+	returns: list of indexs
+	"""
+
+
+
+def get_cos_sim(input, reviews, relevant_doc_index):
 	"""
 	input: string- the users input
-	review: string - user reivew from dataset
+	reviews: user reviews 
+	relevant_doc_index: list of relevant docs
 	"""
 
-def create_list():
+def top_locations():
+	"""
+	get top 100 locations 
+	return in format {location : [(score, row_number)]}
 	"""
 
+def location_frequency():
+	"""
+	get frequencies of the top 100 
+	return {location : (score, [index])}
 	"""
 
-def cos_sim_reviews(input_terms, wine_tfidf_matrix):
+def cos_sim_reviews(input_terms, wine_dict):
 	"""
 	input_terms: string inputted query
 	wine_tfidf_matrix: vector of the words in the various
-	reviews: {} dictionary of the user responses in format wine_name: user reivew
-
-	0: postings list 
-	1: get cos_sim of each one (into a arr)
-	2: arg sort the arr to get the index of the top ____
-	3: go through each row to contruct a {location: [ids]}
-	4: once there are 4 unique regions & at least 5 entries in each list of tuples
 
 	returns a dictionary of locations in format {location : [(score, row_number)]} 
 	"""
+	# call create_OR_list and get list of releveant index
+	# do cos_sim for the relevant docs  call get_cos_sim
+	# go through and create  {location : [(score, row_number)]} for top 100 cos_sim results
+	# get frequency each location in the top 100 {location : (score, [index])}
 	
 
 
-def formated_output(locations_dict):
+def formatted_output(locations_dict):
 	"""
 	takes in the created dictionary and formats the output to be more user readable
+	location, "you should consider these wines" + wines 
 
 	"""
 

@@ -23,20 +23,19 @@ def search():
 
 
 
-def create_OR_list(query):
+def create_OR_list(q_lst):
 	"""
 	checks to see if ANY of the query terms are in the review
 
 	returns: list of indexs
 	"""
-	q_lst = word_tokenize(query)
 	word_idx = []
 	for word in q_lst:
 		word_idx.append(wine_words_index_dict[word])
-	for idx in word_idx:
-		#get columns and check which rows are non 0 by summing over the rows.
-
-
+	cols = array[:, q_lst]
+	sum_row = np.sum(cols, axis = 0)
+	postings = np.nonzero(sum_row)[0]
+	return postings
 
 def get_cos_sim(query, reviews, relevant_doc_index):
 	"""

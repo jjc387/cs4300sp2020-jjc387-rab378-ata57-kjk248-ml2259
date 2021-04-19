@@ -3,7 +3,7 @@ import nltk
 from nltk import word_tokenize
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
-from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict
+from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict, vec
 from sklearn.metrics.pairwise import cosine_similarity
 
 project_name = "Wine and Beer Food Pairings"
@@ -17,8 +17,8 @@ def search():
 		data = []
 		output_message = ''
 	else:
-		output_message = "Your search: " + cos_sim_reviews(query, wine_dict[:40])
-		data = range(5)
+		output_message = "Your search: " + query
+		data = cos_sim_reviews(query)
 	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
@@ -32,7 +32,7 @@ def create_OR_list(q_lst):
 	word_idx = []
 	for word in q_lst:
 		word_idx.append(wine_words_index_dict[word])
-	cols = array[:, q_lst]
+	cols = tfidf_wine_matrix[:, q_lst]
 	sum_row = np.sum(cols, axis = 0)
 	postings = np.nonzero(sum_row)[0]
 	return postings
@@ -79,7 +79,7 @@ def location_frequency(scores_dict):
 				y += 50		
 	return locs
 
-def cos_sim_reviews(input_terms, wine_dict):
+def cos_sim_reviews(input_terms):
 	"""
 	input_terms: string inputted query
 	wine_tfidf_matrix: vector of the words in the various
@@ -93,9 +93,13 @@ def cos_sim_reviews(input_terms, wine_dict):
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
 	#TODO: tokenize query and put in vector format here
+	query_vec = vec(input_terms)
+	print(query_vec)
+	query_tok = word_tokenize(input_terms)
+	print(query_tok)
 
-	relevant_docs = create_OR_list(query)
-	cos_sims = get_cos_sim(query, relevant_docs)
+	relevant_docs = create_OR_list(query_tok)
+	cos_sims = get_cos_sim(query_vec, relevant_docs)
 	locs = location_frequency(cos_sims)
 
 	loc_freq = [(x, locs[x]['frequency']) for x in locs]
@@ -132,7 +136,10 @@ def formatted_output(locations_dict):
 	data = []
 	for loc in locations_dict:
 		variety_lst = list(get_recommended_varieties(locations_dict[loc]['id']))
-		data.append("visit "+  loc+ ", and while you are there you should consider these varities of wines " + ", ".join(var_lst) + "!")
+		x = ', '.join(variety_lst[:len(variety_lst)-1])
+		x = '{}, and {}'.format(x, variety_lst[len(variety_lst)-1])
+		val = "visit {} , and while you are there you should consider these varities of wines: {}!".format(loc, x)
+		data.append(val)
 	return data
 
 

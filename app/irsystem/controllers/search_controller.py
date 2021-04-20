@@ -108,7 +108,7 @@ def cos_sim_reviews(input_terms):
 	#TODO: tokenize query and put in vector format here
 	query_vec = np.zeros((len(wine_words_index_dict,)))
 	#took this from our code from A1
-	query_tok = re.findall(r"[a-z]+", input_terms)
+	query_tok = re.findall(r"[a-z]+", input_terms.tolower())
 
 	for tok in query_tok:
 		if tok in wine_words_index_dict:

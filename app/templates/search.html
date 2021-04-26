@@ -17,13 +17,17 @@
         <p>Student Name: ({{ netid }})</p>
     </div>
     <form class="form-inline global-search" id="flavor-form" method="GET" action="/search">
-        <h1 style="font-size: 55px; font-family:Futura; color: #4285F4">
-            Check your favorite wine flavors
+        <h1 style="font-size: 55px; font-family:Futura; color: rgb(163, 13, 13)">
+            Travel by Wine
         </h1>
+        <br><br>
+        <h2 style="font-size: 20px; font-family:Futura; color: rgb(227, 98, 126)">
+            Based on your flavor preferences, we will suggest travel destinations based on the wine in that region
+        </h2>
 
         <br><br>
 
-        <label for="flavors">Wine Flavor Preferences: </label>
+        <label for="flavors">Input your favorite wine characteristics: </label>
         <input id="flavors" name="flavors" type="text">
         <button type="submit" class="btn btn-info"> Go! </button>
     </form>

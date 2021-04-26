@@ -22,18 +22,23 @@
         </h1>
         <br><br>
         <h2 style="font-size: 20px; font-family:Futura; color: rgb(227, 98, 126)">
-            Based on your flavor preferences, we will suggest travel destinations based on the wine in that region
+            Based on your wine flavor preferences, we will suggest travel destinations based on the wine in that region
         </h2>
 
         <br><br>
 
-        <label for="flavors">Input your favorite wine characteristics: </label>
+        <label for="flavors">Input your favorite wine characteristics <br>
+            <span><i>Enter as many of your own descriptors or select as many of the
+                    suggested descriptors from the dropdown:</i></span>
+        </label>
         <input id="flavors" name="flavors" type="text">
         <button type="submit" class="btn btn-info"> Go! </button>
     </form>
     <form class="form-inline global-search">
         {% if data %}
         <h1>{{output_message}}</h1>
+        <br>
+        <h3>Based on wine reviews by various users, we suggest these destinations:</h3>
         {% for d in data %}
         <br>
         <p>{{d}}</p>

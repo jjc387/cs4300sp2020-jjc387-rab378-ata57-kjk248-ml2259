@@ -29,67 +29,77 @@ def search():
 		data = cos_sim_reviews(query)
 	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
+def create_query_vec(query):
+	query_vec = np.zeros((len(wine_words_index_dict,)))
+	#took this from our code from A1
+	query_tok = re.findall(r"[a-z]+", input_terms)
+
+	for tok in query_tok:
+		if tok in wine_words_index_dict:
+			idx = wine_words_index_dict[tok]
+			query_vec[idx] += 1
+	
+	for tok in set(query_tok):
+		if tok in wine_words_index_dict:
+			idx = wine_words_index_dict[tok]
+			query_vec[idx] = query_vec[idx] * idf[idx]
+
+	return query_vec
 
 
-def create_OR_list(q_lst):
-	"""
-	checks to see if ANY of the query terms are in the review
-
-	returns: list of indexs
-	"""
-	word_idx = []
-	cols = []
-	for word in q_lst:
-		if word in wine_words_index_dict:
-			word_idx.append(wine_words_index_dict[word])
-			col = tfidf_wine_matrix[:, wine_words_index_dict[word]]
-			cols.append(col)
-	sum_row = np.sum(cols, axis = 0)
-	postings = np.nonzero(sum_row)[0]
-	postings.tolist()
-	return postings
-
-def get_cos_sim(query, relevant_doc_index):
+def get_cos_sim(query):
 	"""
 	input: string- the users input
 	reviews: user reviews (wine_dict)
 	relevant_doc_index: list of relevant docs
-	returns: {index: score}
+	returns: np vector of cos similarities 
 	"""
 	scores = {}
 	query = query.reshape(1, -1) 
-	for doc in relevant_doc_index:
-		curr_review = tfidf_wine_matrix[doc]
-		c_review = curr_review.reshape(1, -1) 
-		cos_sim = cosine_similarity(query, c_review)
-		scores[doc] = cos_sim
+	cos_sims = cosine_similarity(tfidf_wine_matrix, query)
+	# for doc in relevant_doc_index:
+	# 	curr_review = tfidf_wine_matrix[doc]
+	# 	c_review = curr_review.reshape(1, -1) 
+	# 	cos_sim = cosine_similarity(query, c_review)
+	# 	scores[doc] = cos_sim
+
 	return scores
 
+'''
+dict['country'] = [ids associated with that]
 
-def location_frequency(scores_dict):
+for each country that we want:
+	sorted(cos_sims of associated ids)
+	get top 2 regions from the most similar reviews
+'''
+
+
+'''
+relevant_idx = [5,6,4]
+subset = cos_sims[relevant_idx]
+
+sorted_args = np.argsort(subset)
+
+new_idx_sorted_list = [relevant_idx[x] for x in sorted_args]
+'''
+
+def location_sorted_indices(cos_sims):
 	"""
 	get frequencies of the top 5 locations
-	return {location : (frequency, [index])}
+	return {location : [index]}
 	"""
 	locs = {}
 	scores_list = [(x, scores_dict[x]) for x in scores_dict]
 	scores_list = sorted(scores_list, key = lambda x: x[1], reverse=True)
 	
-	i = 0
-	y = 500
-	while i < len(scores_list):
+	for i in range(len(scores_list)):
 		doc, score = scores_list[i]
 		prov = wine_dict[doc]['province']
 		if prov not in locs:
 			locs[prov] = [doc]
 		else:
 			locs[prov].append(doc)
-			# locs[prov]['frequency'] += 1
-
-		i += 1
-		if i == y:
-			if len(locs) < 5:
-				y += 50		
+		
 	return locs
 
 def cos_sim_reviews(input_terms):
@@ -105,26 +115,20 @@ def cos_sim_reviews(input_terms):
 	# go through and create  {location : [(score, row_number)]} for top 100 cos_sim results
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
-	#TODO: tokenize query and put in vector format here
-	query_vec = np.zeros((len(wine_words_index_dict,)))
-	#took this from our code from A1
-	query_tok = re.findall(r"[a-z]+", input_terms)
+	#TODO: Iteration 2
+	# pre-step) if user doesn't pick 3 countries, randomly generate countries to get 3 
+	# 1) do cos sim with query against all docs
+	# 2) for each country get sorted list of indices ranked by highest cos sim to lowest
+	# 3) pick out top 2 regions from the indices (associated with 2 different reviews)
+	# 4) dictionary with key of country and value is list of 2 response class objects 
 
-	for tok in query_tok:
-		if tok in wine_words_index_dict:
-			idx = wine_words_index_dict[tok]
-			query_vec[idx] += 1
-	
-	for tok in set(query_tok):
-		if tok in wine_words_index_dict:
-			idx = wine_words_index_dict[tok]
-			query_vec[idx] = query_vec[idx] * idf[idx]
-	relevant_docs = create_OR_list(query_tok)
+	query_vec = create_query_vec(input_terms)
 	cos_sims = get_cos_sim(query_vec, relevant_docs)
-	locs = location_frequency(cos_sims)
+	
+	locs = location_sorted_indices(cos_sims)
 
 	loc_freq = [(x, len(locs[x])) for x in locs]
-	loc_freq = sorted(loc_freq, key = lambda x: len(x), reverse=True)
+	loc_freq = sorted(loc_freq, key = lambda x: x[1], reverse=True)
 
 	size = 5
 	#if less than 5 distinct locations are returned

@@ -1,11 +1,13 @@
 from . import *  
 import re
+import json
 # import nltk
 # from nltk import word_tokenize
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict, vec, idf
 from sklearn.metrics.pairwise import cosine_similarity
+from app.irsystem.controllers.response_class import Response_format
 
 project_name = "Where to Travel based on Wine Preferences"
 net_id = "Jessica Chen: jjc387, Rhea Bansal: rab378, Amani Ahmed: ata57, \
@@ -153,6 +155,7 @@ def formatted_output(locations_dict):
 	{location : (frequency, [index])}
 	"""
 	data = []
+	dict_data = {}
 	for loc in locations_dict:
 		variety_lst = list(get_recommended_varieties(locations_dict[loc]))
 		if len(variety_lst) > 5:
@@ -161,6 +164,21 @@ def formatted_output(locations_dict):
 		
 		val = "visit {}, and while you are there you should consider these varities of wines: {}!".format(loc, x)
 		data.append(val)
+		
+		##### tried to start the output formatting lmk what you think ######
+
+		# get the top 3 wine responses for the location
+		three_ind = locations_dict[loc][:3]
+
+		dict_data[loc] = []
+		## for the location, go through the top 3 responses (or we can change to 2) and get the info we need for each one. 
+		## append the object to the list for the given location
+		for i in three_ind:
+			obj = Response_format(wine_dict["region"][i], wine_dict["wine"][i], wine_dict["description"][i], wine_dict["winery"][i])
+			dict_data[loc].append(obj)
+
+	#json.dumps(dict_data)
+	
 	return data
 
 

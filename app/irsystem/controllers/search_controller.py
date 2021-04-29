@@ -24,18 +24,16 @@ def home():
 
 @irsystem.route('/search', methods=['GET'])
 def search():
-	ans = unpickle_files()
-	if ans == True:
-		query = request.args.get('flavors')
-		if not query:
-			data = []
-			output_message = ''
-		else:
-			output_message = "Your search: " + query
-			data = cos_sim_reviews(query)
-			if len(data) == 0:
-				data = ["We couldn't find results for this query. Try adding more descriptors"]
-		return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
+	query = request.args.get('flavors')
+	if not query:
+		data = []
+		output_message = ''
+	else:
+		output_message = "Your search: " + query
+		data = cos_sim_reviews(query)
+		if len(data) == 0:
+			data = ["We couldn't find results for this query. Try adding more descriptors"]
+	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
 def unpickle_files():

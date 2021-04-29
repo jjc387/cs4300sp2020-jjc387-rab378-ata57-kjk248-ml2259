@@ -49,7 +49,7 @@
                 <button type="submit" class="btn btn-info"> Go! </button>
             </form>
         </div>
-        <form class="form-inline global-search">
+        <!-- <form class="form-inline global-search">
             {% if data %}
             <h1>{{output_message}}</h1>
             <br>
@@ -59,7 +59,14 @@
             <p>{{d}}</p>
             {% endfor %}
             {% endif %}
-        </form>
+        </form> -->
+        <div id="results">
+            {% if data %}
+            <input type="hidden" id="data-here" value="True" />
+            <h1 id="result-header">{{output_message}}</h1>
+            <h3 id="result-header">Based on wine reviews by various users, we suggest these destinations:</h3>
+            {% endif %}
+        </div>
     </div>
     <footer>
         <p>Student Name: ({{ netid }})</p>
@@ -158,6 +165,35 @@
             let countries_sel = $("#countries").val();
             $("#country-hidden").val(countries_sel);
             console.log($("#country-hidden").val());
+        });
+
+        let data_mock = [
+            {
+                "country": "France",
+                "region": "Alsace",
+                "winery": "French winery",
+                "wine": "Chardonnay",
+                "review": "this is a review for france"
+            },
+            {
+                "country": "Germany",
+                "region": "Munich",
+                "winery": "German winery",
+                "wine": "Riesling",
+                "review": "this is a review for germany"
+            }
+        ];
+
+        $.each(data_mock, function (index, value) {
+            if ($("#data-here")) {
+                $("#results").append($(
+                    '<div class="result-item"><h4>' + value.region + ' in ' + value.country + '</h4> \
+                    <p>Based on your preferences, you should consider visiting <b>' +
+                    value.winery + '</b> and trying their <b>' + value.wine +
+                    '</b>. Here\'s what one wine reviewer said about this wine: "' +
+                    value.review + '"</p></div>'
+                ))
+            }
         });
 
 

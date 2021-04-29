@@ -121,6 +121,7 @@ def cos_sim_reviews(input_terms):
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
 	#TODO: tokenize query and put in vector format here
+	unpickle_files()
 	query_vec = np.zeros((len(wine_words_index_dict,)))
 	#took this from our code from A1
 	query_tok = re.findall(r"[a-z]+", input_terms.lower())

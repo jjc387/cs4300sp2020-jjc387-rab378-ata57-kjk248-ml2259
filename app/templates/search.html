@@ -22,13 +22,10 @@
 </head>
 
 <body>
-    <div class="bottomcorner">
-        <p>Student Name: ({{ netid }})</p>
-    </div>
     <div class="header">
-        <h1 style="font-size: 55px; font-family:Futura; color: rgb(163, 13, 13)">
+        <!-- <h1 style="font-size: 55px; font-family:Futura; color: rgb(163, 13, 13)">
             Travel by Wine
-        </h1>
+        </h1> -->
         <br>
     </div>
     <div class="subheader">
@@ -39,14 +36,14 @@
     <div class="main-form">
         <form id="flavor-form" method="GET" action="/search">
 
-            <label class="item-left" for="flavors">I like my wine:
+            <label class="item-label" for="flavors">I like my wine:
             </label>
             <span class="item-input"><input id="flavors" name="flavors" type="text"></span>
 
-            <label class="item-left" for="countries">Where do you want to go?</label>
-            <span class="item-input">
-                <select class="selectpicker" id="countries" name="countries" multiple
-                    title="Select country(s)"></select></span>
+            <label class="item-label" for="countries">Where do you want to go?</label>
+            <span class="item-input" id="country-picker">
+                <select class="selectpicker" id="countries" multiple title="Select country(s)"></select></span>
+            <input type="hidden" name="countries" id="country-hidden">
 
             <button type="submit" class="btn btn-info"> Go! </button>
         </form>
@@ -62,6 +59,9 @@
         {% endfor %}
         {% endif %}
     </form>
+    <footer>
+        <p>Student Name: ({{ netid }})</p>
+    </footer>
     <script>
         const availableFlavors = [
             "Dry",
@@ -84,8 +84,8 @@
                         suggested descriptors from the dropdown");
             $("#flavors_tag").tooltip({
                 position: {
-                    my: "right+150 top",
-                    at: "right+150 top",
+                    my: "right+100 top",
+                    at: "right+100 top",
                     using: function (position, feedback) {
                         $(this).css(position);
                     }
@@ -150,6 +150,16 @@
                 text: value
             }));
         });
+
+        $("#countries").on("change", function (e) {
+            console.log($("#countries").val());
+            let countries_sel = $("#countries").val();
+            $("#country-hidden").val(countries_sel);
+            console.log($("#country-hidden").val());
+        });
+
+
+
     </script>
 </body>
 

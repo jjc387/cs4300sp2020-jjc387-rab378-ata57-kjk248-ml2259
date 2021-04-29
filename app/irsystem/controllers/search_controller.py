@@ -1,15 +1,21 @@
 from . import *  
 import re
+import pickle
 # import nltk
 # from nltk import word_tokenize
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
-from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict, vec, idf
+# from app.irsystem.controllers.wine_data import wine_dict, tfidf_wine_matrix, wine_words_index_dict, idf
 from sklearn.metrics.pairwise import cosine_similarity
 
 project_name = "Where to Travel based on Wine Preferences"
 net_id = "Jessica Chen: jjc387, Rhea Bansal: rab378, Amani Ahmed: ata57, \
 Kylie Kurz: kjk248, Mindy Lee: ml2259"
+wine_dict = {}
+tfidf_wine_matrix = []
+wine_words_index_dict = {}
+idf = []
+
 
 
 @irsystem.route('/', methods=['GET'])
@@ -30,6 +36,15 @@ def search():
 	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
+def unpickle_files():
+	with open('winedata.pickle', 'wb') as handle:
+		pickle.dump(wine_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	with open('sparsetfidfmatrix.pickle', 'wb') as handle:
+		pickle.dump(tfidf_wine_matrix, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	with open('idf.pickle', 'wb') as handle:
+		pickle.dump(idf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	with open('winedescriptions.pickle', 'wb') as handle:
+		pickle.dump(wine_words_index_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 def create_OR_list(q_lst):
 	"""

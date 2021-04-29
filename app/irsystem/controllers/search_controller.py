@@ -12,12 +12,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 project_name = "Where to Travel based on Wine Preferences"
 net_id = "Jessica Chen: jjc387, Rhea Bansal: rab378, Amani Ahmed: ata57, \
 Kylie Kurz: kjk248, Mindy Lee: ml2259"
-wine_dict = []
-tfidf_wine_matrix = []
-wine_words_index_dict = []
-idf = []
 
-
+global wine_dict
+global tfidf_wine_matrix
+global wine_words_index_dict
+global idf
 
 @irsystem.route('/', methods=['GET'])
 def home():
@@ -25,33 +24,40 @@ def home():
 
 @irsystem.route('/search', methods=['GET'])
 def search():
-	unpickle_files()
-	query = request.args.get('flavors')
-	if not query:
-		data = []
-		output_message = ''
-	else:
-		output_message = "Your search: " + query
-		data = cos_sim_reviews(query)
-		if len(data) == 0:
-			data = ["We couldn't find results for this query. Try adding more descriptors"]
-	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
+	ans = unpickle_files()
+	if ans == True:
+		query = request.args.get('flavors')
+		if not query:
+			data = []
+			output_message = ''
+		else:
+			output_message = "Your search: " + query
+			data = cos_sim_reviews(query)
+			if len(data) == 0:
+				data = ["We couldn't find results for this query. Try adding more descriptors"]
+		return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
 def unpickle_files():
-	print("  BALAHHHHH   " + str(os.path.getsize("idf.pickle")))
+	global wine_dict
+	global tfidf_wine_matrix
+	global wine_words_index_dict
+	global idf
+	# print("  BALAHHHHH   " + str(os.path.getsize("winedescriptions.pickle")))
 	with (open('winedata.pickle', "rb")) as openfile:
 		while True:
 			try:
-				wine_dict.append(pickle.load(openfile))
+				wine_dict = (pickle.load(openfile))
 			except EOFError:
 				break
 	# with open('winedata.pickle', 'rb') as handle:
 	# 	wine_dict = pickle.load(handle)
+	# print("WINE DICT 26670")
+	# print(wine_dict[26670])
 	with (open('sparsetfidfmatrix.pickle', "rb")) as openfile:
 		while True:
 			try:
-				tfidf_wine_matrix.append(pickle.load(openfile))
+				tfidf_wine_matrix = (pickle.load(openfile))
 			except EOFError:
 				break
 	# with open('sparsetfidfmatrix.pickle', 'rb') as handle:
@@ -59,7 +65,7 @@ def unpickle_files():
 	with (open('idf.pickle', "rb")) as openfile:
 		while True:
 			try:
-				idf.append(pickle.load(openfile))
+				idf = (pickle.load(openfile))
 			except EOFError:
 				break
 	# with open('idf.pickle', 'rb') as handle:
@@ -68,12 +74,15 @@ def unpickle_files():
 	with (open('winedescriptions.pickle', "rb")) as openfile:
 		while True:
 			try:
-				wine_words_index_dict.append(pickle.load(openfile))
+				wine_words_index_dict = (pickle.load(openfile))
 			except EOFError:
 				break
+	# print(wine_words_index_dict)
 	# with open('winedescriptions.pickle', 'rb') as handle:
 	# 	wine_words_index_dict = pickle.load(handle)
-	print("DONEEEEE EEEEE EEEE")
+	# print("DONEEEEE EEEEE EEEE")
+	return True
+
 
 def create_OR_list(q_lst):
 	"""
@@ -86,7 +95,7 @@ def create_OR_list(q_lst):
 	for word in q_lst:
 		if word in wine_words_index_dict:
 			word_idx.append(wine_words_index_dict[word])
-			col = tfidf_wine_matrix[:, wine_words_index_dict[word]]
+			col = tfidf_wine_matrix.getcol(wine_words_index_dict[word])
 			cols.append(col)
 	sum_row = np.sum(cols, axis = 0)
 	postings = np.nonzero(sum_row)[0]
@@ -103,7 +112,7 @@ def get_cos_sim(query, relevant_doc_index):
 	scores = {}
 	query = query.reshape(1, -1) 
 	for doc in relevant_doc_index:
-		curr_review = tfidf_wine_matrix[doc]
+		curr_review = tfidf_wine_matrix.getrow(doc)
 		c_review = curr_review.reshape(1, -1) 
 		cos_sim = cosine_similarity(query, c_review)
 		scores[doc] = cos_sim
@@ -115,15 +124,33 @@ def location_frequency(scores_dict):
 	get frequencies of the top 5 locations
 	return {location : (frequency, [index])}
 	"""
+	global wine_dict
 	locs = {}
-	scores_list = [(x, scores_dict[x]) for x in scores_dict]
+	# print(scores_dict[98576][0][0])
+	scores_list = [(x, scores_dict[x][0][0]) for x in scores_dict.keys()]
+	# print(scores_list)
 	scores_list = sorted(scores_list, key = lambda x: x[1], reverse=True)
 	
 	i = 0
 	y = 500
+	# (index, score)
 	while i < len(scores_list):
+		# print(scores_list[i])
 		doc, score = scores_list[i]
-		prov = wine_dict[doc]['province']
+		# print("DOC")
+		# print(doc)
+		# print("SCORE")
+		# print(score)
+		# print("WINE DICT LENGTH")
+		# print(len(wine_dict))
+		# print(len(tf))
+		# print(wine_dict.keys())
+
+		# print(doc in wine_dict)
+		# print(wine_dict[0])
+		# print(wine_dict.get(doc)['province'])
+
+		prov = wine_dict.get(doc)['province']
 		if prov not in locs:
 			locs[prov] = [doc]
 		else:
@@ -152,14 +179,15 @@ def cos_sim_reviews(input_terms):
 	#TODO: tokenize query and put in vector format here
 	
 	####### THESE  4 LINES ARE WHERE IM GETTING AN ERROR #############
-	wine_dict= wine_dict[0]
-	tfidf_wine_matrix = tfidf_wine_matrix[0]
-	wine_words_index_dict = wine_words_index_dict[0]
-	idf = idf[-0]
+	# wine_dict= wine_dict[0]
+	# tfidf_wine_matrix = tfidf_wine_matrix[0]
+	# wine_words_index_dict = wine_words_index_dict[0]
+	# idf = idf[0]
 
 	# wine_words_index_dict = wine_words_index_dict[0]
+	# print(wine_dict)
 	query_vec = np.zeros((len(wine_words_index_dict,)))
-	print(idf)
+	# print("IDF at 0" + str(idf[0]))
 	#took this from our code from A1
 	query_tok = re.findall(r"[a-z]+", input_terms.lower())
 
@@ -173,8 +201,19 @@ def cos_sim_reviews(input_terms):
 			idx = wine_words_index_dict[tok]
 			query_vec[idx] = query_vec[idx] * idf[idx]
 	relevant_docs = create_OR_list(query_tok)
+
+	#26670 
+	# print("tfidf_wine_matrix.getrow(doc)")
+	# print(tfidf_wine_matrix.getrow(26670))
+	# print("########")
+	# print(tfidf_wine_matrix[26670,:])
+	# print("########")
+	# print(tfidf_wine_matrix[26670,159])
+	# print("RELEVANT DOCS")
+	# print(relevant_docs)
 	cos_sims = get_cos_sim(query_vec, relevant_docs)
 	locs = location_frequency(cos_sims)
+	# print(query_tok)
 
 	loc_freq = [(x, len(locs[x])) for x in locs]
 	loc_freq = sorted(loc_freq, key = lambda x: len(x), reverse=True)
@@ -192,7 +231,7 @@ def cos_sim_reviews(input_terms):
 
 ######################## formatting output #########################
 
-def get_recommended_varieties(ids, wine_dict=wine_dict):
+def get_recommended_varieties(ids):
 	"""
 	return set of varieties suggested
 	"""

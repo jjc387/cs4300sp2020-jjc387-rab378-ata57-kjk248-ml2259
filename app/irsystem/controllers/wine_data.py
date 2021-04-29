@@ -18,11 +18,17 @@ df = df[df.province.notnull()]
 df = df[df.province != "France Other"]
 df = df[df.province != "Spain Other"]
 df = df[df.province != "Australia Other"]
+df = df.reset_index()
+
 wine_dict = df.to_dict(orient='index')
+# print(wine_dict[26670])
 
 with open('winedata.pickle', 'wb') as handle:
     pickle.dump(wine_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+
+# wine_dict = df.to_dict(orient='index')
+# print(wine_dict[26670])
 #END
 
 
@@ -41,6 +47,11 @@ with open('winedata.pickle', 'wb') as handle:
 # referenced assignment 5 to help with the tf-idf vecotorizer!
 vec = TfidfVectorizer(stop_words='english', min_df = 10, max_features=5000)
 tfidf_wine_matrix = vec.fit_transform([wine_dict[d]['description'] for d in wine_dict]).toarray()
+print("TF IDF WINE MATRIX")
+print(len(tfidf_wine_matrix))
+print("WINE DICT SHAPE")
+print(len(wine_dict))
+
 sparse_tfidf_matrix = sparse.csr_matrix(tfidf_wine_matrix)
 idf = vec.idf_ 
 wine_words = vec.get_feature_names()

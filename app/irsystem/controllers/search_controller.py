@@ -79,7 +79,7 @@ def unpickle_files():
 	# print(wine_words_index_dict)
 	# with open('winedescriptions.pickle', 'rb') as handle:
 	# 	wine_words_index_dict = pickle.load(handle)
-	# print("DONEEEEE EEEEE EEEE")
+	print("DONEEEEE EEEEE EEEE")
 	# return True
 
 
@@ -108,13 +108,17 @@ def get_cos_sim(query, relevant_doc_index):
 	relevant_doc_index: list of relevant docs
 	returns: {index: score}
 	"""
-	scores = {}
+	# scores = {}
 	query = query.reshape(1, -1) 
-	for doc in relevant_doc_index:
-		curr_review = tfidf_wine_matrix.getrow(doc)
-		c_review = curr_review.reshape(1, -1) 
-		cos_sim = cosine_similarity(query, c_review)
-		scores[doc] = cos_sim
+	cos_sims = cosine_similarity(tfidf_wine_matrix, query)
+	# query = query.reshape(1, -1) 
+	# for doc in relevant_doc_index:
+	# 	curr_review = tfidf_wine_matrix.getrow(doc)
+	# 	c_review = curr_review.reshape(1, -1) 
+	# 	cos_sim = cosine_similarity(query, c_review)
+	# 	scores[doc] = cos_sim
+	# print(cos_sims.shape)
+	scores = {index:score for index, score in enumerate(cos_sims)}
 	return scores
 
 
@@ -125,8 +129,8 @@ def location_frequency(scores_dict):
 	"""
 	global wine_dict
 	locs = {}
-	# print(scores_dict[98576][0][0])
-	scores_list = [(x, scores_dict[x][0][0]) for x in scores_dict.keys()]
+	# print(scores_dict[98576])
+	scores_list = [(x, scores_dict[x][0]) for x in scores_dict.keys()]
 	# print(scores_list)
 	scores_list = sorted(scores_list, key = lambda x: x[1], reverse=True)
 	
@@ -200,7 +204,7 @@ def cos_sim_reviews(input_terms):
 			idx = wine_words_index_dict[tok]
 			query_vec[idx] = query_vec[idx] * idf[idx]
 	relevant_docs = create_OR_list(query_tok)
-
+	print("got tDONE with or")
 	#26670 
 	# print("tfidf_wine_matrix.getrow(doc)")
 	# print(tfidf_wine_matrix.getrow(26670))
@@ -211,7 +215,9 @@ def cos_sim_reviews(input_terms):
 	# print("RELEVANT DOCS")
 	# print(relevant_docs)
 	cos_sims = get_cos_sim(query_vec, relevant_docs)
+	print("got done with COS sim")
 	locs = location_frequency(cos_sims)
+	print("got done with LOCS")
 	# print(query_tok)
 
 	loc_freq = [(x, len(locs[x])) for x in locs]
@@ -226,6 +232,7 @@ def cos_sim_reviews(input_terms):
 
 	top_5_info = {k: locs[k] for k in top_5_loc}
 	output = formatted_output(top_5_info)
+	print("OUTPUTTTTTTTT")
 	return output
 
 ######################## formatting output #########################

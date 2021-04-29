@@ -1,6 +1,7 @@
 from . import *  
 import re
 import pickle
+import os
 # import nltk
 # from nltk import word_tokenize
 from app.irsystem.models.helpers import *
@@ -11,9 +12,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 project_name = "Where to Travel based on Wine Preferences"
 net_id = "Jessica Chen: jjc387, Rhea Bansal: rab378, Amani Ahmed: ata57, \
 Kylie Kurz: kjk248, Mindy Lee: ml2259"
-wine_dict = {}
+wine_dict = []
 tfidf_wine_matrix = []
-wine_words_index_dict = {}
+wine_words_index_dict = []
 idf = []
 
 
@@ -24,6 +25,7 @@ def home():
 
 @irsystem.route('/search', methods=['GET'])
 def search():
+	unpickle_files()
 	query = request.args.get('flavors')
 	if not query:
 		data = []
@@ -37,14 +39,41 @@ def search():
 
 
 def unpickle_files():
-	with open('winedata.pickle', 'wb') as handle:
-		pickle.dump(wine_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-	with open('sparsetfidfmatrix.pickle', 'wb') as handle:
-		pickle.dump(tfidf_wine_matrix, handle, protocol=pickle.HIGHEST_PROTOCOL)
-	with open('idf.pickle', 'wb') as handle:
-		pickle.dump(idf, handle, protocol=pickle.HIGHEST_PROTOCOL)
-	with open('winedescriptions.pickle', 'wb') as handle:
-		pickle.dump(wine_words_index_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	print("  BALAHHHHH   " + str(os.path.getsize("idf.pickle")))
+	with (open('winedata.pickle', "rb")) as openfile:
+		while True:
+			try:
+				wine_dict.append(pickle.load(openfile))
+			except EOFError:
+				break
+	# with open('winedata.pickle', 'rb') as handle:
+	# 	wine_dict = pickle.load(handle)
+	with (open('sparsetfidfmatrix.pickle', "rb")) as openfile:
+		while True:
+			try:
+				tfidf_wine_matrix.append(pickle.load(openfile))
+			except EOFError:
+				break
+	# with open('sparsetfidfmatrix.pickle', 'rb') as handle:
+	# 	tfidf_wine_matrix = pickle.load(handle)
+	with (open('idf.pickle', "rb")) as openfile:
+		while True:
+			try:
+				idf.append(pickle.load(openfile))
+			except EOFError:
+				break
+	# with open('idf.pickle', 'rb') as handle:
+	# 	idf = pickle.load(handle)
+
+	with (open('winedescriptions.pickle', "rb")) as openfile:
+		while True:
+			try:
+				wine_words_index_dict.append(pickle.load(openfile))
+			except EOFError:
+				break
+	# with open('winedescriptions.pickle', 'rb') as handle:
+	# 	wine_words_index_dict = pickle.load(handle)
+	print("DONEEEEE EEEEE EEEE")
 
 def create_OR_list(q_lst):
 	"""
@@ -121,8 +150,16 @@ def cos_sim_reviews(input_terms):
 	# get frequency each location in the top 100 {location : (score, [index])}
 	
 	#TODO: tokenize query and put in vector format here
-	unpickle_files()
+	
+	####### THESE  4 LINES ARE WHERE IM GETTING AN ERROR #############
+	wine_dict= wine_dict[0]
+	tfidf_wine_matrix = tfidf_wine_matrix[0]
+	wine_words_index_dict = wine_words_index_dict[0]
+	idf = idf[-0]
+
+	# wine_words_index_dict = wine_words_index_dict[0]
 	query_vec = np.zeros((len(wine_words_index_dict,)))
+	print(idf)
 	#took this from our code from A1
 	query_tok = re.findall(r"[a-z]+", input_terms.lower())
 

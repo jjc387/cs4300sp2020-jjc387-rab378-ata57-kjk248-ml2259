@@ -6,15 +6,19 @@
 } */
 body {
 padding-bottom: 2px;
+display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 footer{
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  color: black;
+    flex-shrink: 0;
   text-align: center;
 }
+
+.content {
+    flex: 1 0 auto;
+  }
 
 .btn{
 background-color: #4285F4;

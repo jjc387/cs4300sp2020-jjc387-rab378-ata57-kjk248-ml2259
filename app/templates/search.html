@@ -33,32 +33,34 @@
             Based on your wine flavor preferences, we will suggest travel destinations that best match them!
         </h2>
     </div>
-    <div class="main-form">
-        <form id="flavor-form" method="GET" action="/search">
+    <div class="content">
+        <div class="main-form">
+            <form id="flavor-form" method="GET" action="/search">
 
-            <label class="item-label" for="flavors">I like my wine:
-            </label>
-            <span class="item-input"><input id="flavors" name="flavors" type="text"></span>
+                <label class="item-label" for="flavors">I like my wine:
+                </label>
+                <span class="item-input"><input id="flavors" name="flavors" type="text"></span>
 
-            <label class="item-label" for="countries">Where do you want to go?</label>
-            <span class="item-input" id="country-picker">
-                <select class="selectpicker" id="countries" multiple title="Select country(s)"></select></span>
-            <input type="hidden" name="countries" id="country-hidden">
+                <label class="item-label" for="countries">Where do you want to go?</label>
+                <span class="item-input" id="country-picker">
+                    <select class="selectpicker" id="countries" multiple title="Select country(s)"></select></span>
+                <input type="hidden" name="countries" id="country-hidden">
 
-            <button type="submit" class="btn btn-info"> Go! </button>
+                <button type="submit" class="btn btn-info"> Go! </button>
+            </form>
+        </div>
+        <form class="form-inline global-search">
+            {% if data %}
+            <h1>{{output_message}}</h1>
+            <br>
+            <h3>Based on wine reviews by various users, we suggest these destinations:</h3>
+            {% for d in data %}
+            <br>
+            <p>{{d}}</p>
+            {% endfor %}
+            {% endif %}
         </form>
     </div>
-    <form class="form-inline global-search">
-        {% if data %}
-        <h1>{{output_message}}</h1>
-        <br>
-        <h3>Based on wine reviews by various users, we suggest these destinations:</h3>
-        {% for d in data %}
-        <br>
-        <p>{{d}}</p>
-        {% endfor %}
-        {% endif %}
-    </form>
     <footer>
         <p>Student Name: ({{ netid }})</p>
     </footer>

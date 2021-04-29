@@ -20,6 +20,7 @@ global idf
 
 @irsystem.route('/', methods=['GET'])
 def home():
+	unpickle_files()
 	return render_template('search.html', name=project_name, netid=net_id, flavors=[])
 
 @irsystem.route('/search', methods=['GET'])
@@ -79,7 +80,7 @@ def unpickle_files():
 	# with open('winedescriptions.pickle', 'rb') as handle:
 	# 	wine_words_index_dict = pickle.load(handle)
 	# print("DONEEEEE EEEEE EEEE")
-	return True
+	# return True
 
 
 def create_OR_list(q_lst):

@@ -5,35 +5,52 @@
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/jquery.tagsinput-revisited.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/css/bootstrap-select.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="/static/js/jquery.tagsinput-revisited.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+
 </head>
 
 <body>
-    <div class="topcorner">
-        <p>Project Name: {{ name }}</p>
+    <div class="bottomcorner">
         <p>Student Name: ({{ netid }})</p>
     </div>
-    <form class="form-inline global-search" id="flavor-form" method="GET" action="/search">
+    <div class="header">
         <h1 style="font-size: 55px; font-family:Futura; color: rgb(163, 13, 13)">
             Travel by Wine
         </h1>
-        <br><br>
+        <br>
+    </div>
+    <div class="subheader">
         <h2 style="font-size: 20px; font-family:Futura; color: rgb(227, 98, 126)">
-            Based on your wine flavor preferences, we will suggest travel destinations based on the wine in that region
+            Based on your wine flavor preferences, we will suggest travel destinations that best match them!
         </h2>
+    </div>
+    <div class="main-form">
+        <form id="flavor-form" method="GET" action="/search">
 
-        <br><br>
+            <label class="item-left" for="flavors">I like my wine:
+            </label>
+            <span class="item-input"><input id="flavors" name="flavors" type="text"></span>
 
-        <label for="flavors">Input your favorite wine characteristics <br>
-            <span><i>Enter as many of your own descriptors or select as many of the
-                    suggested descriptors from the dropdown:</i></span>
-        </label>
-        <input id="flavors" name="flavors" type="text">
-        <button type="submit" class="btn btn-info"> Go! </button>
-    </form>
+            <label class="item-left" for="countries">Where do you want to go?</label>
+            <span class="item-input">
+                <select class="selectpicker" id="countries" name="countries" multiple
+                    title="Select country(s)"></select></span>
+
+            <button type="submit" class="btn btn-info"> Go! </button>
+        </form>
+    </div>
     <form class="form-inline global-search">
         {% if data %}
         <h1>{{output_message}}</h1>
@@ -62,8 +79,77 @@
             }
         });
 
+        $(function () {
+            $("#flavors_tag").prop("title", "Enter as many of your own descriptors or select as many of the \
+                        suggested descriptors from the dropdown");
+            $("#flavors_tag").tooltip({
+                position: {
+                    my: "right+150 top",
+                    at: "right+150 top",
+                    using: function (position, feedback) {
+                        $(this).css(position);
+                    }
+                }
+            }).off("mouseover mouseout");
+        });
 
+        const countries = [
+            'No preference',
+            'Albania',
+            'Argentina',
+            'Australia',
+            'Austria',
+            'Bosnia and Herzegovina',
+            'Brazil',
+            'Bulgaria',
+            'Canada',
+            'Chile',
+            'China',
+            'Croatia',
+            'Cyprus',
+            'Czech Republic',
+            'Egypt',
+            'England',
+            'France',
+            'Georgia',
+            'Germany',
+            'Greece',
+            'Hungary',
+            'India',
+            'Israel',
+            'Italy',
+            'Japan',
+            'Lebanon',
+            'Lithuania',
+            'Luxembourg',
+            'Macedonia',
+            'Mexico',
+            'Moldova',
+            'Montenegro',
+            'Morocco',
+            'New Zealand',
+            'Portugal',
+            'Romania',
+            'Serbia',
+            'Slovakia',
+            'Slovenia',
+            'South Africa',
+            'South Korea',
+            'Spain',
+            'Switzerland',
+            'Tunisia',
+            'Turkey',
+            'US',
+            'Ukraine',
+            'Uruguay'
+        ]
 
+        $.each(countries, function (index, value) {
+            $('#countries').append($('<option/>', {
+                value: value,
+                text: value
+            }));
+        });
     </script>
 </body>
 

@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-url = "https://raw.githubusercontent.com/jjc387/cs4300sp2021-jjc387-rab378-ata57-kjk248-ml2259/mindy/app/irsystem/short_wines.csv"
+url = "https://raw.githubusercontent.com/jjc387/cs4300sp2021-jjc387-rab378-ata57-kjk248-ml2259/master/app/irsystem/winereviews.csv"
 column_headers = ["country", "description", "designation", "points", "price", "province", "region_1", "region_2", "variety", "winery"]
 df = pd.read_csv(url, usecols=column_headers)
 wine_dict = df.to_dict(orient='index')

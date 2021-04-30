@@ -5,41 +5,72 @@
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/jquery.tagsinput-revisited.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/css/bootstrap-select.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="/static/js/jquery.tagsinput-revisited.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+
 </head>
 
 <body>
-    <div class="topcorner">
-        <p>Project Name: {{ name }}</p>
-        <p>Student Name: ({{ netid }})</p>
-    </div>
-    <form class="form-inline global-search" id="flavor-form" method="GET" action="/search">
-        <h1 style="font-size: 55px; font-family:Futura; color: rgb(163, 13, 13)">
+    <div class="header">
+        <!-- <h1 style="font-size: 55px; font-family:Futura; color: rgb(163, 13, 13)">
             Travel by Wine
-        </h1>
-        <br><br>
-        <h2 style="font-size: 20px; font-family:Futura; color: rgb(227, 98, 126)">
-            Based on your flavor preferences, we will suggest travel destinations based on the wine in that region
-        </h2>
-
-        <br><br>
-
-        <label for="flavors">Input your favorite wine characteristics: </label>
-        <input id="flavors" name="flavors" type="text">
-        <button type="submit" class="btn btn-info"> Go! </button>
-    </form>
-    <form class="form-inline global-search">
-        {% if data %}
-        <h1>{{output_message}}</h1>
-        {% for d in data %}
+        </h1> -->
         <br>
-        <p>{{d}}</p>
-        {% endfor %}
-        {% endif %}
-    </form>
+    </div>
+    <div class="subheader">
+        <h2 style="font-size: 20px; font-family:Futura; color: rgb(227, 98, 126)">
+            Based on your wine flavor preferences, we will suggest travel destinations that best match them!
+        </h2>
+    </div>
+    <div class="content">
+        <div class="main-form">
+            <form id="flavor-form" method="GET" action="/search">
+
+                <label class="item-label" for="flavors">I like my wine:
+                </label>
+                <span class="item-input"><input id="flavors" name="flavors" type="text"></span>
+
+                <label class="item-label" for="countries">Where do you want to go?</label>
+                <span class="item-input" id="country-picker">
+                    <select class="selectpicker" id="countries" multiple title="Select country(s)"></select></span>
+                <input type="hidden" name="countries" id="country-hidden">
+
+                <button type="submit" class="btn btn-info"> Go! </button>
+            </form>
+        </div>
+        <!-- <form class="form-inline global-search">
+            {% if data %}
+            <h1>{{output_message}}</h1>
+            <br>
+            <h3>Based on wine reviews by various users, we suggest these destinations:</h3>
+            {% for d in data %}
+            <br>
+            <p>{{d}}</p>
+            {% endfor %}
+            {% endif %}
+        </form> -->
+        <div id="results">
+            {% if data %}
+            <input type="hidden" id="data-here" value="True" />
+            <h1 id="result-header">{{output_message}}</h1>
+            <h3 id="result-header">Based on wine reviews by various users, we suggest these destinations:</h3>
+            {% endif %}
+        </div>
+    </div>
+    <footer>
+        <p>Student Name: ({{ netid }})</p>
+    </footer>
     <script>
         const availableFlavors = [
             "Dry",
@@ -54,6 +85,115 @@
         $("#flavors").tagsInput({
             'autocomplete': {
                 source: availableFlavors
+            }
+        });
+
+        $(function () {
+            $("#flavors_tag").prop("title", "Enter as many of your own descriptors or select as many of the \
+                        suggested descriptors from the dropdown");
+            $("#flavors_tag").tooltip({
+                position: {
+                    my: "right+100 top",
+                    at: "right+100 top",
+                    using: function (position, feedback) {
+                        $(this).css(position);
+                    }
+                }
+            }).off("mouseover mouseout");
+        });
+
+        const countries = [
+            'No preference',
+            'Albania',
+            'Argentina',
+            'Australia',
+            'Austria',
+            'Bosnia and Herzegovina',
+            'Brazil',
+            'Bulgaria',
+            'Canada',
+            'Chile',
+            'China',
+            'Croatia',
+            'Cyprus',
+            'Czech Republic',
+            'Egypt',
+            'England',
+            'France',
+            'Georgia',
+            'Germany',
+            'Greece',
+            'Hungary',
+            'India',
+            'Israel',
+            'Italy',
+            'Japan',
+            'Lebanon',
+            'Lithuania',
+            'Luxembourg',
+            'Macedonia',
+            'Mexico',
+            'Moldova',
+            'Montenegro',
+            'Morocco',
+            'New Zealand',
+            'Portugal',
+            'Romania',
+            'Serbia',
+            'Slovakia',
+            'Slovenia',
+            'South Africa',
+            'South Korea',
+            'Spain',
+            'Switzerland',
+            'Tunisia',
+            'Turkey',
+            'US',
+            'Ukraine',
+            'Uruguay'
+        ]
+
+        $.each(countries, function (index, value) {
+            $('#countries').append($('<option/>', {
+                value: value,
+                text: value
+            }));
+        });
+
+        $("#countries").on("change", function (e) {
+            console.log($("#countries").val());
+            let countries_sel = $("#countries").val();
+            $("#country-hidden").val(countries_sel);
+            console.log($("#country-hidden").val());
+        });
+
+        let data_mock = [
+            {
+                "country": "France",
+                "region": "Alsace",
+                "winery": "French winery",
+                "wine": "Chardonnay",
+                "review": "this is a review for france"
+            },
+            {
+                "country": "Germany",
+                "region": "Munich",
+                "winery": "German winery",
+                "wine": "Riesling",
+                "review": "this is a review for germany"
+            }
+        ];
+
+        $.each(data_mock, function (index, value) {
+            if ($("#data-here")) {
+                $("#results").append($(
+                    '<div class="result-item"><img class="wine" src="/static/images/wine_glass.png"/> \
+                    <h4> ' + value.region + ' in ' + value.country + '</h4 > \
+                    <p>Based on your preferences, you should consider visiting <b>' +
+                    value.winery + '</b> and trying their <b>' + value.wine +
+                    '</b>. Here\'s what one wine reviewer said about this wine: "' +
+                    value.review + '"</p></div > '
+                ))
             }
         });
 

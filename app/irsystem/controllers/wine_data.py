@@ -5,6 +5,7 @@
 
 # #PREPROCESSING
 
+
 # url = "https://raw.githubusercontent.com/jjc387/cs4300sp2021-jjc387-rab378-ata57-kjk248-ml2259/master/app/irsystem/winereviews.csv"
 # column_headers = ["country", "description", "province", "region_1", "variety", "winery"]
 # df = pd.read_csv(url, usecols=column_headers)

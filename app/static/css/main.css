@@ -1,38 +1,120 @@
-@media (min-width: 1200px) {
-.container {
-    max-width: 970px;
-}
+/* @media (min-width: 1200px) {
+
 }
 @media (min-width:400px){
-.global-search {
-padding: 20px 0;
-text-align:center;
-}
+
+} */
 body {
-padding-top: 15%;
-padding-bottom: 15px;
+padding-bottom: 2px;
+display: flex;
+  flex-direction: column;
 }
-.global-search {
-text-align:center;
-padding:10px;
+
+footer{
+    flex-shrink: 0;
+  text-align: center;
 }
-.global-search .form-control {
-width:500px;
-}
-.global-search * {
-display:inline-block;
-margin-bottom:0;
-}
-}
-.topcorner{
-position:absolute;
-top:2%;
-right:2%;
-}
+
+.content {
+    flex: 1 0 auto;
+  }
+
 .btn{
 background-color: #4285F4;
 border: none
 }
-.step-links a{
-color: #4285F4;
+
+.main-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+    padding: 20px;
 }
+
+.header{
+    height: 350px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-image: url("/static/images/plane_wine2.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-top: 5%;
+}
+
+.subheader{
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.item-label {
+    float: left;
+    padding-bottom: 2rem;
+    font-size: 2rem;
+    padding-top: 4px;
+}
+
+.item-input {
+    overflow: hidden;
+    display: block;
+    padding-left: 2rem;
+    padding-bottom: 3rem;
+}
+
+.tagsinput {
+    border-bottom: 1px solid gray !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.tagsinput input:focus{
+    border: none !important;
+}
+
+.result-item{
+    padding: 2rem;
+    border: 1px solid black;
+    border-radius: 3rem;
+    margin-bottom: 2rem;
+}
+
+.wine{
+    height: 50px;
+    width: auto;
+    display: inline;
+    float: left;
+    padding-right: 2rem;
+    padding-top: 1rem;
+}
+#flavor-form{
+    text-align: left;
+    width: 100%;
+    padding-left: 20rem;
+    padding-right: 20rem;
+}
+
+#country-picker {
+    overflow: inherit;
+    padding-left: 30rem;
+}
+
+#results {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+    padding: 10rem;
+}
+
+#result-header {
+    text-align: center;
+    padding-bottom: 2rem;
+}
+
+
+
+

@@ -84,7 +84,7 @@ def query_vectorizer(query_input):
 			word_vector = tfidfweight * word_embedding_matrix(idx).reshape(1,300)
 			weightedqueryterms.append(word_vector)
 	query_vec = sum(weightedqueryterms)
-	#what ????
+	return query_vec
 
 #TODO: parses through input for country preference and returns list of countries 
 def get_country_list(country_input):
@@ -116,7 +116,7 @@ def get_top_results(scores_array, country_list):
 	get frequencies of the top 5 locations
 	return {location : (frequency, [index])}
 	"""
-	results = {}
+	results = {} 
 	for country in country_list:
 		results[country] = []
 		country_idx = country_to_idx_dict[country]
@@ -132,7 +132,7 @@ def get_top_results(scores_array, country_list):
 			prov_string = ''
 			region1 = wine_dict[idx]['region_1']
 			prov = wine_dict[idx]['province']
-			if region1 == 'NaN':
+			if region1 is None or region1 == 'NaN':
 				prov_string = prov
 			else:
 				prov_string = "{}, {}".format(region1, prov)

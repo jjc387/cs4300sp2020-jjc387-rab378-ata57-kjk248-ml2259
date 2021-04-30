@@ -10,10 +10,13 @@ project_name = "Where to Travel based on Wine Preferences"
 net_id = "Jessica Chen: jjc387, Rhea Bansal: rab378, Amani Ahmed: ata57, \
 Kylie Kurz: kjk248, Mindy Lee: ml2259"
 
-global wine_dict
-global tfidf_wine_matrix
-global wine_words_index_dict
-global idf
+global wine_dict 
+
+#insert kylie's ml stuff 
+global tfidf_embedding_matrix # num reviews x 300
+global word_embedding_matrix # num terms x 300
+global tfidf_weight_dict # word -> tf idf weight
+global word_to_idx_dict # word -> idx (for word_embedding_matrix row idx)
 
 @irsystem.route('/', methods=['GET'])
 def home():
@@ -23,6 +26,7 @@ def home():
 @irsystem.route('/search', methods=['GET'])
 def search():
 	query = request.args.get('flavors')
+	countries = request.args.get('countries')
 	if not query:
 		data = []
 		output_message = ''
@@ -39,6 +43,7 @@ def unpickle_files():
 	global tfidf_wine_matrix
 	global wine_words_index_dict
 	global idf
+	#TODO: replace with reduced descriptions dict
 	with (open('winedata.pickle', "rb")) as openfile:
 		while True:
 			try:
@@ -68,23 +73,13 @@ def unpickle_files():
 				break
 
 
-def create_OR_list(q_lst):
-	"""
-	checks to see if ANY of the query terms are in the review
+#TODO: query vectorizer function
+def query_vectorizer(query_input):
+	raise NotImplementedError()
 
-	returns: list of indexs
-	"""
-	word_idx = []
-	cols = []
-	for word in q_lst:
-		if word in wine_words_index_dict:
-			word_idx.append(wine_words_index_dict[word])
-			col = tfidf_wine_matrix.getcol(wine_words_index_dict[word])
-			cols.append(col)
-	sum_row = np.sum(cols, axis = 0)
-	postings = np.nonzero(sum_row)[0]
-	postings.tolist()
-	return postings
+#TODO: parses through input for country preference and returns list of countries 
+def get_country_list(country_input):
+	raise NotImplementedError()
 
 def get_cos_sim(query, relevant_doc_index):
 	"""
@@ -94,11 +89,23 @@ def get_cos_sim(query, relevant_doc_index):
 	returns: {index: score}
 	"""
 	query = query.reshape(1, -1) 
+	#TODO: do cos sim with tfidf_embeddings_matrix
 	cos_sims = cosine_similarity(tfidf_wine_matrix, query)
 	scores = {index:score for index, score in enumerate(cos_sims)}
 	return scores
 
+#TODO: repurpose this to take in cos_sim values and queried countries and return the top 3 distinct regions and associated wineries
+'''
+results[‘country_name’] = [ ]
 
+
+for each country’s top 3 results:
+
+province_dict = {'province': wine_dict[idx][‘province’], 'winery': 'e_dict[idx][‘winery’], ‘variety’: e_dict[idx][‘variety’], 'review’:e_dict[idx][‘description’]}
+
+results[‘country_name’].append(province_dict)
+
+'''
 def location_frequency(scores_dict):
 	"""
 	get frequencies of the top 5 locations

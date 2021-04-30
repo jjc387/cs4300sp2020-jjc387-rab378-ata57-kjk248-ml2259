@@ -88,7 +88,6 @@ def query_vectorizer(query_input):
 
 #TODO: parses through input for country preference and returns list of countries 
 def get_country_list(country_input):
-	country_list = country_input.split(',')
 
 	if len(country_list) == 0 or (len(country_list) == 1 and 'No preference' in country_list):
 		country_list = country_to_idx_dict.keys()
@@ -121,8 +120,7 @@ def get_top_results(scores_array, country_list):
 		results[country] = []
 		country_idx = country_to_idx_dict[country]
 		scores_subset = scores_array[country_idx]
-		sorted_args = np.argsort(scores_subset)
-		sorted_args = np.flip(sorted_args)
+		sorted_args = (-scores_subset).argsort()
 		sorted_idxs = [country_idx[i] for i in sorted_args]
 
 		i = 0

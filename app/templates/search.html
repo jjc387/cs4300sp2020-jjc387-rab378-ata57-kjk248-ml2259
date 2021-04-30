@@ -185,7 +185,7 @@
         ];
 
         $.each(data_mock, function (index, value) {
-            if ($("#data-here")) {
+            if ($("#data-here") == "True") {
                 $("#results").append($(
                     '<div class="result-item"><img class="wine" src="/static/images/wine_glass.png"/> \
                     <h4> ' + value.region + ' in ' + value.country + '</h4 > \

@@ -82,6 +82,14 @@ border: none
     margin-bottom: 2rem;
 }
 
+.wine{
+    height: 50px;
+    width: auto;
+    display: inline;
+    float: left;
+    padding-right: 2rem;
+    padding-top: 1rem;
+}
 #flavor-form{
     text-align: left;
     width: 100%;

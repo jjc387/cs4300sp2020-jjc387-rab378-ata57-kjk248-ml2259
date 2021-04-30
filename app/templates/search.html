@@ -187,11 +187,12 @@
         $.each(data_mock, function (index, value) {
             if ($("#data-here")) {
                 $("#results").append($(
-                    '<div class="result-item"><h4>' + value.region + ' in ' + value.country + '</h4> \
+                    '<div class="result-item"><img class="wine" src="/static/images/wine_glass.png"/> \
+                    <h4> ' + value.region + ' in ' + value.country + '</h4 > \
                     <p>Based on your preferences, you should consider visiting <b>' +
                     value.winery + '</b> and trying their <b>' + value.wine +
                     '</b>. Here\'s what one wine reviewer said about this wine: "' +
-                    value.review + '"</p></div>'
+                    value.review + '"</p></div > '
                 ))
             }
         });

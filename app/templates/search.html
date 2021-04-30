@@ -104,53 +104,12 @@
 
         const countries = [
             'No preference',
-            'Albania',
-            'Argentina',
-            'Australia',
-            'Austria',
-            'Bosnia and Herzegovina',
-            'Brazil',
-            'Bulgaria',
-            'Canada',
-            'Chile',
-            'China',
-            'Croatia',
-            'Cyprus',
-            'Czech Republic',
-            'Egypt',
-            'England',
-            'France',
-            'Georgia',
-            'Germany',
-            'Greece',
-            'Hungary',
-            'India',
-            'Israel',
-            'Italy',
-            'Japan',
-            'Lebanon',
-            'Lithuania',
-            'Luxembourg',
-            'Macedonia',
-            'Mexico',
-            'Moldova',
-            'Montenegro',
-            'Morocco',
-            'New Zealand',
-            'Portugal',
-            'Romania',
-            'Serbia',
-            'Slovakia',
-            'Slovenia',
-            'South Africa',
-            'South Korea',
-            'Spain',
-            'Switzerland',
-            'Tunisia',
-            'Turkey',
-            'US',
-            'Ukraine',
-            'Uruguay'
+            'Argentina', 'Australia', 'Austria', 'Bulgaria', 'Canada',
+            'Chile', 'Croatia', 'Cyprus', 'England', 'France', 'Georgia',
+            'Germany', 'Greece', 'Hungary', 'India', 'Israel', 'Italy',
+            'Lebanon', 'Macedonia', 'Mexico', 'Moldova', 'Morocco',
+            'New Zealand', 'Portugal', 'Romania', 'Serbia', 'Slovenia',
+            'South Africa', 'Spain', 'Switzerland', 'Turkey', 'US', 'Uruguay'
         ]
 
         $.each(countries, function (index, value) {
@@ -185,7 +144,7 @@
         ];
 
         $.each(data_mock, function (index, value) {
-            if ($("#data-here")) {
+            if ($("#data-here") == "True") {
                 $("#results").append($(
                     '<div class="result-item"><img class="wine" src="/static/images/wine_glass.png"/> \
                     <h4> ' + value.region + ' in ' + value.country + '</h4 > \

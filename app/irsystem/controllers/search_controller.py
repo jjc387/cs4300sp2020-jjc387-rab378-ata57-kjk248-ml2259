@@ -15,7 +15,7 @@ global country_to_idx_dict
 #insert kylie's ml stuff 
 global tfidf_embedding_matrix # num reviews x 300
 global word_embedding_matrix # num terms x 300
-global tfidf_weight_dict # word -> tf idf weight
+global idf_weight_dict # word -> tf idf weight
 global word_to_idx_dict # word -> idx (for word_embedding_matrix row idx)
 
 @irsystem.route('/', methods=['GET'])
@@ -39,47 +39,63 @@ def search():
 
 
 def unpickle_files():
-	global wine_dict
-	global tfidf_wine_matrix
-	global wine_words_index_dict
-	global idf
+	global wine_dict # done
+	global country_to_idx_dict
+	#insert kylie's ml stuff 
+	global tfidf_embedding_matrix # num reviews x 300
+	global word_embedding_matrix # num terms x 300
+	global idf_weight_dict # word -> tf idf weight
+	global word_to_idx_dict # word -> idx (for word_embedding_matrix row idx)
 	#TODO: replace with reduced descriptions dict
-	with (open('winedata.pickle', "rb")) as openfile:
+	with (open('wine_dict2.pickle', "rb")) as openfile:
 		while True:
 			try:
 				wine_dict = (pickle.load(openfile))
 			except EOFError:
 				break
-
-	with (open('sparsetfidfmatrix.pickle', "rb")) as openfile:
+	## need this still ##
+	# with (open('.pickle', "rb")) as openfile:
+	# 	while True:
+	# 		try:
+	# 			tfidf_wine_matrix = (pickle.load(openfile))
+	# 		except EOFError:
+	# 			break
+	
+	with (open('idf_weight_dict2.pickle', "rb")) as openfile:
 		while True:
 			try:
-				tfidf_wine_matrix = (pickle.load(openfile))
+				idf_weight_dict = (pickle.load(openfile))
+			except EOFError:
+				break
+
+	with (open('matrix_word2vec2.pickle', "rb")) as openfile:
+		while True:
+			try:
+				word_embedding_matrix = (pickle.load(openfile))
 			except EOFError:
 				break
 	
-	with (open('idf.pickle', "rb")) as openfile:
+	with (open('country_to_idx2.pickle', "rb")) as openfile:
 		while True:
 			try:
-				idf = (pickle.load(openfile))
+				country_to_idx_dict = (pickle.load(openfile))
 			except EOFError:
 				break
 
-	with (open('winedescriptions.pickle', "rb")) as openfile:
+	with (open('words_word2vec_dict2.pickle', "rb")) as openfile:
 		while True:
 			try:
-				wine_words_index_dict = (pickle.load(openfile))
+				word_to_idx_dict = (pickle.load(openfile))
 			except EOFError:
 				break
-
 
 #TODO: query vectorizer function
 def query_vectorizer(query_input):
 	query_toks = re.findall(r"[a-z]+", input_terms.lower())
 	weightedqueryterms = []
 	for term in query_toks:
-		if term in tfidf_weight_dict:
-			tfidfweight = tfidf_weight_dict[term]
+		if term in idf_weight_dict:
+			tfidfweight = idf_weight_dict[term]
 			idx = word_to_idx_dict[term]
 			word_vector = tfidfweight * word_embedding_matrix(idx).reshape(1,300)
 			weightedqueryterms.append(word_vector)

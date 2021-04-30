@@ -53,13 +53,13 @@ def unpickle_files():
 				wine_dict = (pickle.load(openfile))
 			except EOFError:
 				break
-	## need this still ##
-	# with (open('.pickle', "rb")) as openfile:
-	# 	while True:
-	# 		try:
-	# 			tfidf_wine_matrix = (pickle.load(openfile))
-	# 		except EOFError:
-	# 			break
+
+	with (open('review_tfidf_embeddings2.pickle', "rb")) as openfile:
+		while True:
+			try:
+				tfidf_wine_matrix = (pickle.load(openfile))
+			except EOFError:
+				break
 	
 	with (open('idf_weight_dict2.pickle', "rb")) as openfile:
 		while True:

@@ -27,12 +27,13 @@ def home():
 def search():
 	query = request.args.get('flavors')
 	countries = request.args.get('countries')
+	print("COUNTRY TYPE" + str(type(countries)))
 	if not query:
 		data = []
 		output_message = ''
 	else:
 		output_message = "Your search: " + query
-		data = cos_sim_reviews(query)
+		data = cos_sim_reviews(query, countries)
 		if len(data) == 0:
 			data = ["We couldn't find results for this query. Try adding more descriptors"]
 	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
@@ -57,7 +58,7 @@ def unpickle_files():
 	with (open('review_tfidf_embeddings2.pickle', "rb")) as openfile:
 		while True:
 			try:
-				tfidf_wine_matrix = (pickle.load(openfile))
+				tfidf_embedding_matrix = (pickle.load(openfile))
 			except EOFError:
 				break
 	
@@ -67,6 +68,8 @@ def unpickle_files():
 				idf_weight_dict = (pickle.load(openfile))
 			except EOFError:
 				break
+	print("HERE IS THE DICT")
+	print(idf_weight_dict["spice"])
 
 	with (open('matrix_word2vec2.pickle', "rb")) as openfile:
 		while True:
@@ -91,20 +94,21 @@ def unpickle_files():
 
 #TODO: query vectorizer function
 def query_vectorizer(query_input):
-	query_toks = re.findall(r"[a-z]+", input_terms.lower())
+	query_toks = re.findall(r"[a-z]+", query_input.lower())
 	weightedqueryterms = []
 	for term in query_toks:
+		# print(idf_weight_dict)
 		if term in idf_weight_dict:
 			tfidfweight = idf_weight_dict[term]
 			idx = word_to_idx_dict[term]
-			word_vector = tfidfweight * word_embedding_matrix(idx).reshape(1,300)
+			word_vector = tfidfweight * word_embedding_matrix.getrow(idx).reshape(1,300)
 			weightedqueryterms.append(word_vector)
 	query_vec = sum(weightedqueryterms)
 	return query_vec
 
 #TODO: parses through input for country preference and returns list of countries 
-def get_country_list(country_input):
-
+def get_country_list(country_list):
+	country_list = country_list.split(",")
 	if len(country_list) == 0 or (len(country_list) == 1 and 'No preference' in country_list):
 		country_list = country_to_idx_dict.keys()
 	
@@ -123,7 +127,7 @@ def get_cos_sim(query):
 	query = query.reshape(1, -1) 
 	#TODO: do cos sim with tfidf_embeddings_matrix
 	cos_sims = cosine_similarity(tfidf_embedding_matrix, query)
-	return cos_scores
+	return cos_sims
 
 #TODO: repurpose this to take in cos_sim values and queried countries and return the top 3 distinct regions and associated wineries
 def get_top_results(scores_array, country_list):
@@ -136,12 +140,13 @@ def get_top_results(scores_array, country_list):
 		results[country] = []
 		country_idx = country_to_idx_dict[country]
 		scores_subset = scores_array[country_idx]
+		scores_subset = scores_subset.flatten()
 		sorted_args = (-scores_subset).argsort()
 		sorted_idxs = [country_idx[i] for i in sorted_args]
 
 		i = 0
 		prov_list = []
-		while i < len(sorted_idxs) and results[country] < 3:
+		while i < len(sorted_idxs) and len(results[country]) < 3:
 			idx = sorted_idxs[i]
 			prov_string = ''
 			region1 = wine_dict[idx]['region_1']

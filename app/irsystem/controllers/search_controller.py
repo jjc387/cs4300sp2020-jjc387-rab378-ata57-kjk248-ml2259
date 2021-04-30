@@ -25,6 +25,8 @@ def search():
 	else:
 		output_message = "Your search: " + query
 		data = cos_sim_reviews(query)
+		if len(data) == 0:
+			data = ["We couldn't find results for this query. Try adding more descriptors"]
 	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
@@ -106,7 +108,7 @@ def cos_sim_reviews(input_terms):
 	#TODO: tokenize query and put in vector format here
 	query_vec = np.zeros((len(wine_words_index_dict,)))
 	#took this from our code from A1
-	query_tok = re.findall(r"[a-z]+", input_terms)
+	query_tok = re.findall(r"[a-z]+", input_terms.lower())
 
 	for tok in query_tok:
 		if tok in wine_words_index_dict:
@@ -159,7 +161,7 @@ def formatted_output(locations_dict):
 			variety_lst = variety_lst[1:6]
 		x = ', '.join(variety_lst)
 		
-		val = "visit {}, and while you are there you should consider these varities of wines: {}!".format(loc, x)
+		val = "Visit {}, and while you are there you should consider these varieties of wines: {}!".format(loc, x)
 		data.append(val)
 	return data
 

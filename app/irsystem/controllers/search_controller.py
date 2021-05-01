@@ -113,8 +113,10 @@ def query_vectorizer(query_input):
 
 #TODO: parses through input for country preference and returns list of countries 
 def get_country_list(country_list):
+	if len(country_list) == 0:
+		return country_to_idx_dict.keys()
 	country_list = country_list.split(",")
-	if len(country_list) == 0 or (len(country_list) == 1 and 'No preference' in country_list):
+	if (len(country_list) == 1 and 'No preference' in country_list):
 		country_list = country_to_idx_dict.keys()
 	
 	if 'No preference' in country_list:

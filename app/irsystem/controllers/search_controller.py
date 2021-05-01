@@ -96,13 +96,17 @@ def unpickle_files():
 def query_vectorizer(query_input):
 	query_toks = re.findall(r"[a-z]+", query_input.lower())
 	weightedqueryterms = []
+	i = 0
 	for term in query_toks:
 		# print(idf_weight_dict)
 		if term in idf_weight_dict:
+			i = i+1
 			tfidfweight = idf_weight_dict[term]
 			idx = word_to_idx_dict[term]
 			word_vector = tfidfweight * word_embedding_matrix.getrow(idx).reshape(1,300)
 			weightedqueryterms.append(word_vector)
+	if i == 0:
+		return None
 	query_vec = sum(weightedqueryterms)
 	return query_vec
 
@@ -149,11 +153,15 @@ def get_top_results(scores_array, country_list):
 		while i < len(sorted_idxs) and len(results[country]) < 3:
 			idx = sorted_idxs[i]
 			prov_string = ''
+			print(wine_dict[idx].keys())
+			print(wine_dict[idx])
 			region1 = wine_dict[idx]['region_1']
 			prov = wine_dict[idx]['province']
-			if region1 is None or region1 == 'NaN':
+			if region1 is None or region1 == 'NaN' or region1 == 'nan':
 				prov_string = prov
 			else:
+				print(region1)
+
 				prov_string = "{}, {}".format(region1, prov)
 			
 			if prov_string not in prov_list:
@@ -183,6 +191,8 @@ def cos_sim_reviews(query_input, country_input):
 	
 	
 	query_vec = query_vectorizer(query_input)
+	if query_vec == None:
+		return []
 	country_list = get_country_list(country_input)
 	cos_scores = get_cos_sim(query_vec)
 	results = get_top_results(cos_scores, country_list)

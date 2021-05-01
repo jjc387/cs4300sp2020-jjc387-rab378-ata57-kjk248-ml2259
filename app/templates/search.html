@@ -51,8 +51,9 @@
         </div>
 
         <div id="results">
-            {% if data %}
+
             <h1 id="result-header">{{output_message}}</h1>
+            {% if data is defined and data|length %}
             <h3 id="result-header">Based on wine reviews by various users, we suggest these destinations:</h3>
             {% for d in data %}
             <div class="result-item"><img class="wine" src="/static/images/wine_glass.png" />
@@ -63,8 +64,14 @@
                     "{{d.review}}"</p>
             </div>
             {% endfor %}
+            {% endif %}
+            {% if data is defined and data == [] %}
+            <h3> We couldn't find anything for that search! Here are some descriptor words to try searching:
+                <a href="aroma_wheel.html">Aroma Wheel</a>
+            </h3>
+            {% endif %}
         </div>
-        {% endif %}
+
     </div>
     </div>
     <footer>
@@ -82,7 +89,7 @@
             "Earthy"
         ];
         $("#flavors").tagsInput({
-            ' autocomplete': { source: availableFlavors }
+            'autocomplete': { source: availableFlavors }
         });
         $(function () {
             $("#flavors_tag").prop("title", "Enter as many of your own descriptors or select as many of the \

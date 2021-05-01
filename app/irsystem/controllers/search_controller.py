@@ -33,7 +33,9 @@ def search():
 		data = []
 		output_message = ''
 	else:
-		output_message = "Your search: " + query + "wines from " + countries
+		if len(countries) == 0:
+			countries = "anywhere"
+		output_message = "Your search: " + query + " wines from " + countries
 		data = cos_sim_reviews(query, countries)
 		# if len(data) == 0:
 		# 	data = ["We couldn't find results for this query. Try adding more descriptors"]

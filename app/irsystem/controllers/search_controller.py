@@ -39,6 +39,9 @@ def search():
 		# 	data = ["We couldn't find results for this query. Try adding more descriptors"]
 	return render_template('search.html', data=data, output_message=output_message, name=project_name, netid=net_id)
 
+@irsystem.route('/aroma_wheel.html')
+def aroma_wheel():
+	return render_template('aroma_wheel.html')
 
 def unpickle_files():
 	global wine_dict # done

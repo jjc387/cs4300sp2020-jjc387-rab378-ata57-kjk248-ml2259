@@ -34,8 +34,10 @@ def search():
 		output_message = ''
 	else:
 		if len(countries) == 0:
-			countries = "anywhere"
-		output_message = "Your search: " + query + " wines from " + countries
+			country_text = "anywhere"
+		else:
+			country_text = countries
+		output_message = "Your search: " + query + " wines from " + country_text
 		data = cos_sim_reviews(query, countries)
 		# if len(data) == 0:
 		# 	data = ["We couldn't find results for this query. Try adding more descriptors"]
@@ -74,8 +76,6 @@ def unpickle_files():
 				idf_weight_dict = (pickle.load(openfile))
 			except EOFError:
 				break
-	print("HERE IS THE DICT")
-	print(idf_weight_dict["spice"])
 
 	with (open('matrix_word2vec2.pickle', "rb")) as openfile:
 		while True:
@@ -104,7 +104,6 @@ def query_vectorizer(query_input):
 	weightedqueryterms = []
 	i = 0
 	for term in query_toks:
-		# print(idf_weight_dict)
 		if term in idf_weight_dict:
 			i = i+1
 			tfidfweight = idf_weight_dict[term]
@@ -160,8 +159,6 @@ def get_top_results(scores_array, country_list):
 		while i < len(sorted_idxs) and len(prov_list) < 3:
 			idx = sorted_idxs[i]
 			prov_string = ''
-			print(wine_dict[idx].keys())
-			print(wine_dict[idx])
 			region1 = wine_dict[idx]['region_1']
 			prov = wine_dict[idx]['province']
 			if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
@@ -169,7 +166,6 @@ def get_top_results(scores_array, country_list):
 				if country == prov:
 					prov_string = wine_dict[idx]['winery']
 			else:
-				print(region1)
 
 				prov_string = "{}, {}".format(region1, prov)
 			
@@ -204,7 +200,6 @@ def cos_sim_reviews(query_input, country_input):
 	country_list = get_country_list(country_input)
 	cos_scores = get_cos_sim(query_vec)
 	results = get_top_results(cos_scores, country_list)
-	print("OUTPUTTTTTTTT")
 	return results
 
 

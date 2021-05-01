@@ -162,7 +162,7 @@ def get_top_results(scores_array, country_list):
 			print(wine_dict[idx])
 			region1 = wine_dict[idx]['region_1']
 			prov = wine_dict[idx]['province']
-			if region1 is None or region1 == 'NaN' or region1 == 'nan' or math.isnan(region1):
+			if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
 				prov_string = prov
 				if country == prov:
 					prov_string = wine_dict[idx]['winery']

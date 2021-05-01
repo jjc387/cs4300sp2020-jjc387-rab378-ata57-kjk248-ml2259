@@ -29,17 +29,21 @@ def home():
 def search():
 	query = request.args.get('flavors')
 	countries = request.args.get('countries')
-	print("COUNTRY TYPE" + str(type(countries)))
 	if not query:
 		data = []
 		output_message = ''
 	else:
-		output_message = "Your search: " + query
+		if len(countries) == 0:
+			countries = "anywhere"
+		output_message = "Your search: " + query + " wines from " + countries
 		data = cos_sim_reviews(query, countries)
 		# if len(data) == 0:
 		# 	data = ["We couldn't find results for this query. Try adding more descriptors"]
 	return render_template('search.html', data=data, output_message=output_message, name=project_name, netid=net_id)
 
+@irsystem.route('/aroma_wheel.html')
+def aroma_wheel():
+	return render_template('aroma_wheel.html')
 
 def unpickle_files():
 	global wine_dict # done

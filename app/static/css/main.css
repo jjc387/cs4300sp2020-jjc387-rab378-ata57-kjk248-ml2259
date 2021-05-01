@@ -91,7 +91,12 @@ border: none
     padding-top: 1rem;
 }
 
-
+.center{
+    display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
 
 #flavor-form{
     text-align: left;

@@ -3,6 +3,7 @@ import re
 import pickle
 import os
 import flask
+import math
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 from sklearn.metrics.pairwise import cosine_similarity
@@ -159,8 +160,10 @@ def get_top_results(scores_array, country_list):
 			print(wine_dict[idx])
 			region1 = wine_dict[idx]['region_1']
 			prov = wine_dict[idx]['province']
-			if region1 is None or region1 == 'NaN' or region1 == 'nan':
+			if region1 is None or region1 == 'NaN' or region1 == 'nan' or math.isnan(region1):
 				prov_string = prov
+				if country == prov:
+					prov_string = wine_dict[idx]['winery']
 			else:
 				print(region1)
 
@@ -171,7 +174,6 @@ def get_top_results(scores_array, country_list):
 				province_dict = {'country': country,'province': prov_string, 
 				'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 
 				'review':wine_dict[idx]['description']}
-
 				results.append(province_dict)
 		
 			i = i+1

@@ -2,6 +2,7 @@ from . import *
 import re
 import pickle
 import os
+import flask
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 from sklearn.metrics.pairwise import cosine_similarity
@@ -34,9 +35,9 @@ def search():
 	else:
 		output_message = "Your search: " + query
 		data = cos_sim_reviews(query, countries)
-		if len(data) == 0:
-			data = ["We couldn't find results for this query. Try adding more descriptors"]
-	return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
+		# if len(data) == 0:
+		# 	data = ["We couldn't find results for this query. Try adding more descriptors"]
+	return render_template('search.html', data=data, output_message=output_message, name=project_name, netid=net_id)
 
 
 def unpickle_files():
@@ -139,9 +140,8 @@ def get_top_results(scores_array, country_list):
 	get frequencies of the top 5 locations
 	return {location : (frequency, [index])}
 	"""
-	results = {} 
+	results = [] 
 	for country in country_list:
-		results[country] = []
 		country_idx = country_to_idx_dict[country]
 		scores_subset = scores_array[country_idx]
 		scores_subset = scores_subset.flatten()
@@ -150,7 +150,7 @@ def get_top_results(scores_array, country_list):
 
 		i = 0
 		prov_list = []
-		while i < len(sorted_idxs) and len(results[country]) < 3:
+		while i < len(sorted_idxs) and len(prov_list) < 3:
 			idx = sorted_idxs[i]
 			prov_string = ''
 			print(wine_dict[idx].keys())
@@ -166,11 +166,11 @@ def get_top_results(scores_array, country_list):
 			
 			if prov_string not in prov_list:
 				prov_list.append(prov_string)
-				province_dict = {'province': prov_string, 
+				province_dict = {'country': country,'province': prov_string, 
 				'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 
 				'review':wine_dict[idx]['description']}
 
-				results[country].append(province_dict)
+				results.append(province_dict)
 		
 			i = i+1
 
@@ -196,10 +196,8 @@ def cos_sim_reviews(query_input, country_input):
 	country_list = get_country_list(country_input)
 	cos_scores = get_cos_sim(query_vec)
 	results = get_top_results(cos_scores, country_list)
-	results_json = json.dumps(results)
 	print("OUTPUTTTTTTTT")
-	print(results_json)
-	return results_json
+	return results
 
 
 

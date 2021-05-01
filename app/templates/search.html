@@ -39,7 +39,9 @@
 
                 <label class="item-label" for="flavors">I like my wine:
                 </label>
-                <span class="item-input"><input id="flavors" name="flavors" type="text"></span>
+                <span class="item-input">
+                    <input id="flavors" name="flavors" type="text">
+                </span>
 
                 <label class="item-label" for="countries">Where do you want to go?</label>
                 <span class="item-input" id="country-picker">
@@ -49,24 +51,23 @@
                 <button type="submit" class="btn btn-info"> Go! </button>
             </form>
         </div>
-        <!-- <form class="form-inline global-search">
-            {% if data %}
-            <h1>{{output_message}}</h1>
-            <br>
-            <h3>Based on wine reviews by various users, we suggest these destinations:</h3>
-            {% for d in data %}
-            <br>
-            <p>{{d}}</p>
-            {% endfor %}
-            {% endif %}
-        </form> -->
+
         <div id="results">
             {% if data %}
-            <input type="hidden" id="data-here" value="True" />
             <h1 id="result-header">{{output_message}}</h1>
             <h3 id="result-header">Based on wine reviews by various users, we suggest these destinations:</h3>
-            {% endif %}
+            {% for d in data %}
+            <div class="result-item"><img class="wine" src="/static/images/wine_glass.png" />
+                <h4>{{d.province}} in {{d.country}}</h4>
+                <p>Based on your preferences, you should consider visiting <b>
+                        {{d.winery}}</b> and trying their <b>{{d.variety}}</b>.
+                    Here's what one wine reviewer said about this wine:
+                    "{{d.review}}"</p>
+            </div>
+            {% endfor %}
         </div>
+        {% endif %}
+    </div>
     </div>
     <footer>
         <p>Student Name: ({{ netid }})</p>
@@ -120,41 +121,28 @@
         });
 
         $("#countries").on("change", function (e) {
-            console.log($("#countries").val());
             let countries_sel = $("#countries").val();
             $("#country-hidden").val(countries_sel);
-            console.log($("#country-hidden").val());
         });
 
-        let data_mock = [
-            {
-                "country": "France",
-                "region": "Alsace",
-                "winery": "French winery",
-                "wine": "Chardonnay",
-                "review": "this is a review for france"
-            },
-            {
-                "country": "Germany",
-                "region": "Munich",
-                "winery": "German winery",
-                "wine": "Riesling",
-                "review": "this is a review for germany"
-            }
-        ];
+        // $(function () {
+        //     console.log($("#data-here").val());
+        // });
+        // $.each($("#data-here"), function (index, value) {
+        //     console.log(value);
+        // if ($("#data-here") == "True") {
+        //     $("#results").append($(
+        //         '<div class="result-item"><img class="wine" src="/static/images/wine_glass.png"/> \
+        //         <h4> ' + value.region + ' in ' + value.country + '</h4 > \
+        //         <p>Based on your preferences, you should consider visiting <b>' +
+        //         value.winery + '</b> and trying their <b>' + value.wine +
+        //         '</b>. Here\'s what one wine reviewer said about this wine: "' +
+        //         value.review + '"</p></div > '
+        //     ))
+        // }
+        // });
 
-        $.each(data_mock, function (index, value) {
-            if ($("#data-here") == "True") {
-                $("#results").append($(
-                    '<div class="result-item"><img class="wine" src="/static/images/wine_glass.png"/> \
-                    <h4> ' + value.region + ' in ' + value.country + '</h4 > \
-                    <p>Based on your preferences, you should consider visiting <b>' +
-                    value.winery + '</b> and trying their <b>' + value.wine +
-                    '</b>. Here\'s what one wine reviewer said about this wine: "' +
-                    value.review + '"</p></div > '
-                ))
-            }
-        });
+
 
 
 

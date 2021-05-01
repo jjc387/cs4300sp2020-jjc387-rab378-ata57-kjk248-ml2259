@@ -29,12 +29,11 @@ def home():
 def search():
 	query = request.args.get('flavors')
 	countries = request.args.get('countries')
-	print("COUNTRY TYPE" + str(type(countries)))
 	if not query:
 		data = []
 		output_message = ''
 	else:
-		output_message = "Your search: " + query
+		output_message = "Your search: " + query + "wines from " + countries
 		data = cos_sim_reviews(query, countries)
 		# if len(data) == 0:
 		# 	data = ["We couldn't find results for this query. Try adding more descriptors"]

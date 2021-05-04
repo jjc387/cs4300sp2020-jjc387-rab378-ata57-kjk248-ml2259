@@ -161,35 +161,76 @@ def get_top_results(scores_array, country_list):
 	return {location : (frequency, [index])}
 	"""
 	results = [] 
-	for country in country_list:
-		country_idx = country_to_idx_dict[country]
-		scores_subset = scores_array[country_idx]
-		scores_subset = scores_subset.flatten()
-		sorted_args = (-scores_subset).argsort()
-		sorted_idxs = [country_idx[i] for i in sorted_args]
-
-		i = 0
+	if len(country_list) == len(country_to_idx_dict.keys()):
+		srt_all_country = (-scores_array).argsort()
+		#may have to flatten
 		prov_list = []
-		while i < len(sorted_idxs) and len(prov_list) < 3:
-			idx = sorted_idxs[i]
-			prov_string = ''
-			region1 = wine_dict[idx]['region_1']
+		j = 0
+		#countryset = country: index in the results output
+		countryset = {}
+		while j < len(scores_array) and (len(prov_list) < 10):
+			idx = srt_all_country[j]
+			get_score = scores_array[idx]
 			prov = wine_dict[idx]['province']
+			region1 = wine_dict[idx]['region_1']
+			country = wine_dict[idx]['country']
 			if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
 				prov_string = prov
 				if country == prov:
 					prov_string = wine_dict[idx]['winery']
 			else:
 				prov_string = "{}, {}".format(region1, prov)
-			
+				
 			if prov_string not in prov_list:
 				prov_list.append(prov_string)
-				province_dict = {'country': country,'province': prov_string, 
-				'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 
-				'review':format_descriptors(wine_dict[idx]['description'])}
-				results.append(province_dict)
-		
-			i = i+1
+				dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 'review':format_descriptors(wine_dict[idx]['description'], "similarity": get_score, "full_review": None)}
+				if country not in countryset:
+					country_ind = len(countryset)
+					countryset[country] = country_ind
+					results.append({'country': country, 'details' : [dets] })
+				else:
+					country_ind = countryset[country]
+					results[country_ind]['details'].append(dets)
+				
+			j = j+1
+					# need sim score in the pass back, need the full review in the pass back 
+
+	else:
+		countryset = {}
+		for country in country_list:
+			country_idx = country_to_idx_dict[country]
+			scores_subset = scores_array[country_idx]
+			scores_subset = scores_subset.flatten()
+			sorted_args = (-scores_subset).argsort()
+			sorted_idxs = [country_idx[i] for i in sorted_args]
+
+			i = 0
+			prov_list = []
+			while i < len(sorted_idxs) and len(prov_list) < 3:
+				idx = sorted_idxs[i]
+				get_score = scores_array[idx]
+				prov_string = ''
+				region1 = wine_dict[idx]['region_1']
+				prov = wine_dict[idx]['province']
+				if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
+					prov_string = prov
+					if country == prov:
+						prov_string = wine_dict[idx]['winery']
+				else:
+					prov_string = "{}, {}".format(region1, prov)
+				
+				if prov_string not in prov_list:
+					prov_list.append(prov_string)
+					dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'],'review':format_descriptors(wine_dict[idx]['description'], "similarity": get_score, "full_review": None)}
+					if country not in countryset:
+						country_ind = len(countryset)
+						countryset[country] = country_ind
+						results.append({'country': country, 'details' : [dets] })
+					else:
+						country_ind = countryset[country]
+						results[country_ind]['details'].append(dets)
+			
+				i = i+1
 
 	return results
 

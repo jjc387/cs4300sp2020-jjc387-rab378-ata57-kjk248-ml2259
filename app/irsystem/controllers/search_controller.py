@@ -140,7 +140,21 @@ def get_cos_sim(query):
 	cos_sims = cosine_similarity(tfidf_embedding_matrix, query)
 	return cos_sims
 
-#TODO: repurpose this to take in cos_sim values and queried countries and return the top 3 distinct regions and associated wineries
+def format_descriptors(descrip):
+	"""
+	takes in string in format of "crisp cherry moist_earth dry dry"
+	want to return "crisp, cherry, moist earth, dry"
+	"""
+	descrip_lst = descrip.split(' ')
+	descrip_set = set(descrip_lst)
+	descrip_out= ", ".join(list(descrip_set))
+	descrip_out = descrip_out.replace("_", " ")
+	print(descrip_out)
+	return descrip_out
+
+
+#TODO: repurpose this to take in cos_sim values and queried countries 
+# and return the top 3 distinct regions and associated wineries
 def get_top_results(scores_array, country_list):
 	"""
 	get frequencies of the top 5 locations
@@ -166,14 +180,13 @@ def get_top_results(scores_array, country_list):
 				if country == prov:
 					prov_string = wine_dict[idx]['winery']
 			else:
-
 				prov_string = "{}, {}".format(region1, prov)
 			
 			if prov_string not in prov_list:
 				prov_list.append(prov_string)
 				province_dict = {'country': country,'province': prov_string, 
 				'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 
-				'review':wine_dict[idx]['description']}
+				'review':format_descriptors(wine_dict[idx]['description'])}
 				results.append(province_dict)
 		
 			i = i+1

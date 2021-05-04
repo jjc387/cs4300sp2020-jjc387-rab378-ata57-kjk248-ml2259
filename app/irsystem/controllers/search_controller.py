@@ -56,42 +56,42 @@ def unpickle_files():
 	global idf_weight_dict # word -> tf idf weight
 	global word_to_idx_dict # word -> idx (for word_embedding_matrix row idx)
 	#TODO: replace with reduced descriptions dict
-	with (open('wine_dict2.pickle', "rb")) as openfile:
+	with (open('wine_dict0.pickle', "rb")) as openfile:
 		while True:
 			try:
 				wine_dict = (pickle.load(openfile))
 			except EOFError:
 				break
 
-	with (open('review_tfidf_embeddings2.pickle', "rb")) as openfile:
+	with (open('review_tfidf_embeddings01.pickle', "rb")) as openfile:
 		while True:
 			try:
 				tfidf_embedding_matrix = (pickle.load(openfile))
 			except EOFError:
 				break
 	
-	with (open('idf_weight_dict2.pickle', "rb")) as openfile:
+	with (open('idf_weight_dict0.pickle', "rb")) as openfile:
 		while True:
 			try:
 				idf_weight_dict = (pickle.load(openfile))
 			except EOFError:
 				break
 
-	with (open('matrix_word2vec2.pickle', "rb")) as openfile:
+	with (open('matrix_word2vec0.pickle', "rb")) as openfile:
 		while True:
 			try:
 				word_embedding_matrix = (pickle.load(openfile))
 			except EOFError:
 				break
 	
-	with (open('country_to_idx2.pickle', "rb")) as openfile:
+	with (open('country_to_idx0.pickle', "rb")) as openfile:
 		while True:
 			try:
 				country_to_idx_dict = (pickle.load(openfile))
 			except EOFError:
 				break
 
-	with (open('words_word2vec_dict2.pickle', "rb")) as openfile:
+	with (open('words_word2vec_dict0.pickle', "rb")) as openfile:
 		while True:
 			try:
 				word_to_idx_dict = (pickle.load(openfile))

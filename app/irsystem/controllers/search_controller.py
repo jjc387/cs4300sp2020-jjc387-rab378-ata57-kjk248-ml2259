@@ -56,7 +56,7 @@ def unpickle_files():
 	global idf_weight_dict # word -> tf idf weight
 	global word_to_idx_dict # word -> idx (for word_embedding_matrix row idx)
 	#TODO: replace with reduced descriptions dict
-	with (open('wine_dict0.pickle', "rb")) as openfile:
+	with (open('wine_dict02.pickle', "rb")) as openfile:
 		while True:
 			try:
 				wine_dict = (pickle.load(openfile))
@@ -149,7 +149,6 @@ def format_descriptors(descrip):
 	descrip_set = set(descrip_lst)
 	descrip_out= ", ".join(list(descrip_set))
 	descrip_out = descrip_out.replace("_", " ")
-	print(descrip_out)
 	return descrip_out
 
 
@@ -162,28 +161,30 @@ def get_top_results(scores_array, country_list):
 	"""
 	results = [] 
 	if len(country_list) == len(country_to_idx_dict.keys()):
-		srt_all_country = (-scores_array).argsort()
-		#may have to flatten
+		srt_all_country = scores_array.flatten()		
+		srt_all_country = (-srt_all_country).argsort()
 		prov_list = []
 		j = 0
 		#countryset = country: index in the results output
 		countryset = {}
 		while j < len(scores_array) and (len(prov_list) < 10):
 			idx = srt_all_country[j]
-			get_score = scores_array[idx]
+			get_score = scores_array[idx][0] *100
+			get_score = '{:.2f}'.format(get_score)
+
 			prov = wine_dict[idx]['province']
 			region1 = wine_dict[idx]['region_1']
 			country = wine_dict[idx]['country']
+			prov_string = ''
 			if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
 				prov_string = prov
 				if country == prov:
 					prov_string = wine_dict[idx]['winery']
 			else:
 				prov_string = "{}, {}".format(region1, prov)
-				
 			if prov_string not in prov_list:
 				prov_list.append(prov_string)
-				dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 'review':format_descriptors(wine_dict[idx]['description'], "similarity": get_score, "full_review": None)}
+				dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 'review':format_descriptors(wine_dict[idx]['description']), 'similarity': get_score, 'full_review': wine_dict[idx]['full_review']}
 				if country not in countryset:
 					country_ind = len(countryset)
 					countryset[country] = country_ind
@@ -193,7 +194,6 @@ def get_top_results(scores_array, country_list):
 					results[country_ind]['details'].append(dets)
 				
 			j = j+1
-					# need sim score in the pass back, need the full review in the pass back 
 
 	else:
 		countryset = {}
@@ -208,7 +208,8 @@ def get_top_results(scores_array, country_list):
 			prov_list = []
 			while i < len(sorted_idxs) and len(prov_list) < 3:
 				idx = sorted_idxs[i]
-				get_score = scores_array[idx]
+				get_score = scores_array[idx][0] *100
+				get_score = '{:.2f}'.format(get_score)
 				prov_string = ''
 				region1 = wine_dict[idx]['region_1']
 				prov = wine_dict[idx]['province']
@@ -221,7 +222,7 @@ def get_top_results(scores_array, country_list):
 				
 				if prov_string not in prov_list:
 					prov_list.append(prov_string)
-					dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'],'review':format_descriptors(wine_dict[idx]['description'], "similarity": get_score, "full_review": None)}
+					dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'],'review':format_descriptors(wine_dict[idx]['description']), 'similarity': get_score, 'full_review': wine_dict[idx]['full_review']}
 					if country not in countryset:
 						country_ind = len(countryset)
 						countryset[country] = country_ind
@@ -231,7 +232,6 @@ def get_top_results(scores_array, country_list):
 						results[country_ind]['details'].append(dets)
 			
 				i = i+1
-
 	return results
 
 def cos_sim_reviews(query_input, country_input):

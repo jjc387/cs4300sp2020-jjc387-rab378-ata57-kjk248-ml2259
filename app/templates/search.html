@@ -57,11 +57,14 @@
             <h3 id="result-header">Based on wine reviews by various users, we suggest these destinations:</h3>
             {% for d in data %}
             <div class="result-item"><img class="wine" src="/static/images/wine_glass.png" />
-                <h4>{{d.province}} in {{d.country}}</h4>
-                <p>Based on your preferences, you should consider visiting <b>
-                        {{d.winery}}</b> and trying their <b>{{d.variety}}</b>.
-                    Wine reviewers describe this wine to have notes of:
-                    "{{d.review}}"</p>
+                <h3> {{d.country}} </h3>
+                {% for w in d.details%}
+                    <h4>{{w.province}} in {{d.country}} ({{w.similarity}})</h4>
+                    <p>Based on your preferences, you should consider visiting this winery, <b>
+                            {{w.winery}}</b>, and trying their <b>{{w.variety}}</b>.
+                        A wine reviwer has described this wine to have notes of:
+                        "{{w.review}}"</p>
+                    {% endfor %}
             </div>
             {% endfor %}
             {% endif %}

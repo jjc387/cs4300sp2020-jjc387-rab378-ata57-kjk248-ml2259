@@ -160,7 +160,10 @@ def update_results(idx, score, prov_list, countryset, results):
 		if country == prov:
 			prov_string = wine_dict[idx]['winery']
 	else:
-		prov_string = "{}, {}".format(region1, prov)
+		if region1 == prov:
+			prov_string = prov
+		else:
+			prov_string = "{}, {}".format(region1, prov)
 	if prov_string not in prov_list:
 		prov_list.append(prov_string)
 		dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 'review':format_descriptors(wine_dict[idx]['description']), 'similarity': score, 'full_review': wine_dict[idx]['full_review']}

@@ -50,7 +50,6 @@ def aroma_wheel():
 def unpickle_files():
 	global wine_dict # done
 	global country_to_idx_dict
-	#insert kylie's ml stuff 
 	global tfidf_embedding_matrix # num reviews x 300
 	global word_embedding_matrix # num terms x 300
 	global idf_weight_dict # word -> tf idf weight
@@ -98,7 +97,6 @@ def unpickle_files():
 			except EOFError:
 				break
 
-#TODO: query vectorizer function
 def query_vectorizer(query_input):
 	query_toks = re.findall(r"[a-z]+", query_input.lower())
 	weightedqueryterms = []
@@ -115,7 +113,6 @@ def query_vectorizer(query_input):
 	query_vec = sum(weightedqueryterms)
 	return query_vec
 
-#TODO: parses through input for country preference and returns list of countries 
 def get_country_list(country_list):
 	if len(country_list) == 0:
 		return country_to_idx_dict.keys()
@@ -136,7 +133,6 @@ def get_cos_sim(query):
 	returns: {index: score}
 	"""
 	query = query.reshape(1, -1) 
-	#TODO: do cos sim with tfidf_embeddings_matrix
 	cos_sims = cosine_similarity(tfidf_embedding_matrix, query)
 	return cos_sims
 
@@ -151,50 +147,55 @@ def format_descriptors(descrip):
 	descrip_out = descrip_out.replace("_", " ")
 	return descrip_out
 
+def update_results(idx, score, prov_list, countryset, results):
+	
+	score = '{:.2f}'.format(score)
+	
+	prov = wine_dict[idx]['province']
+	region1 = wine_dict[idx]['region_1']
+	country = wine_dict[idx]['country']
+	prov_string = ''
+	if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
+		prov_string = prov
+		if country == prov:
+			prov_string = wine_dict[idx]['winery']
+	else:
+		prov_string = "{}, {}".format(region1, prov)
+	if prov_string not in prov_list:
+		prov_list.append(prov_string)
+		dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 'review':format_descriptors(wine_dict[idx]['description']), 'similarity': score, 'full_review': wine_dict[idx]['full_review']}
+		if country not in countryset:
+			print('adding country ' + country)
+			print(countryset)
+			country_ind = len(countryset)
+			countryset[country] = country_ind
+			print(countryset)
+			results.append({'country': country, 'details' : [dets] })
+		else:
+			country_ind = countryset[country]
+			results[country_ind]['details'].append(dets)
 
-#TODO: repurpose this to take in cos_sim values and queried countries 
-# and return the top 3 distinct regions and associated wineries
+	return prov_list, countryset, results
+
 def get_top_results(scores_array, country_list):
 	"""
-	get frequencies of the top 5 locations
-	return {location : (frequency, [index])}
+	insert comments
 	"""
 	results = [] 
+	#user has selected no country preference
 	if len(country_list) == len(country_to_idx_dict.keys()):
 		srt_all_country = scores_array.flatten()		
 		srt_all_country = (-srt_all_country).argsort()
-		prov_list = []
+		
 		j = 0
-		#countryset = country: index in the results output
-		countryset = {}
+		prov_list = []
+		countryset = {} #country: index in the results output
 		while j < len(scores_array) and (len(prov_list) < 10):
 			idx = srt_all_country[j]
-			get_score = scores_array[idx][0] *100
-			get_score = '{:.2f}'.format(get_score)
-
-			prov = wine_dict[idx]['province']
-			region1 = wine_dict[idx]['region_1']
-			country = wine_dict[idx]['country']
-			prov_string = ''
-			if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
-				prov_string = prov
-				if country == prov:
-					prov_string = wine_dict[idx]['winery']
-			else:
-				prov_string = "{}, {}".format(region1, prov)
-			if prov_string not in prov_list:
-				prov_list.append(prov_string)
-				dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'], 'review':format_descriptors(wine_dict[idx]['description']), 'similarity': get_score, 'full_review': wine_dict[idx]['full_review']}
-				if country not in countryset:
-					country_ind = len(countryset)
-					countryset[country] = country_ind
-					results.append({'country': country, 'details' : [dets] })
-				else:
-					country_ind = countryset[country]
-					results[country_ind]['details'].append(dets)
-				
+			score = scores_array[idx][0] *100
+			prov_list, countryset, results = update_results(idx, score, prov_list, countryset, results)
 			j = j+1
-
+	#user has selected country preferences
 	else:
 		countryset = {}
 		for country in country_list:
@@ -208,45 +209,12 @@ def get_top_results(scores_array, country_list):
 			prov_list = []
 			while i < len(sorted_idxs) and len(prov_list) < 3:
 				idx = sorted_idxs[i]
-				get_score = scores_array[idx][0] *100
-				get_score = '{:.2f}'.format(get_score)
-				prov_string = ''
-				region1 = wine_dict[idx]['region_1']
-				prov = wine_dict[idx]['province']
-				if region1 is None or region1 == 'NaN' or region1 == 'nan' or (not isinstance(region1, str) and math.isnan(region1)):
-					prov_string = prov
-					if country == prov:
-						prov_string = wine_dict[idx]['winery']
-				else:
-					prov_string = "{}, {}".format(region1, prov)
-				
-				if prov_string not in prov_list:
-					prov_list.append(prov_string)
-					dets = {'province': prov_string, 'winery': wine_dict[idx]['winery'], 'variety': wine_dict[idx]['variety'],'review':format_descriptors(wine_dict[idx]['description']), 'similarity': get_score, 'full_review': wine_dict[idx]['full_review']}
-					if country not in countryset:
-						country_ind = len(countryset)
-						countryset[country] = country_ind
-						results.append({'country': country, 'details' : [dets] })
-					else:
-						country_ind = countryset[country]
-						results[country_ind]['details'].append(dets)
-			
+				score = scores_array[idx][0] *100
+				prov_list, countryset, results = update_results(idx, score, prov_list, countryset, results)
 				i = i+1
 	return results
 
-def cos_sim_reviews(query_input, country_input):
-	"""
-	input_terms: string inputted query
-	wine_tfidf_matrix: vector of the words in the various
-
-	returns a dictionary of locations in format {location : [(score, row_number)]} 
-	"""
-	# call create_OR_list and get list of releveant index
-	# do cos_sim for the relevant docs  call get_cos_sim (return as a dict)
-	# create tuple list from get_cos_sim
-	# go through and create  {location : [(score, row_number)]} for top 100 cos_sim results
-	# get frequency each location in the top 100 {location : (score, [index])}
-	
+def cos_sim_reviews(query_input, country_input):	
 	
 	query_vec = query_vectorizer(query_input)
 	if query_vec == None:

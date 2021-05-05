@@ -34,13 +34,13 @@
         <div class="main-form">
             <form id="flavor-form" method="GET" action="/search">
 
-                <label class="item-label" for="flavors">I like my <a href='aroma_wheel.html' data-toggle="tooltip"
-                        title="Click for more wine descriptors">wine</a>:
+                <label class="item-label" for="flavors">I like my wine:
                 </label>
                 <span class="item-input">
                     <input id="flavors" name="flavors" type="text">
                 </span>
-
+                <p> Don't know what to search? Check out the <a href='aroma_wheel.html' data-toggle="tooltip"
+                        title="Click for more wine descriptors">aroma wheel</a> for descriptor words.</p>
                 <label class="item-label" for="countries">Where do you want to go?</label>
                 <span class="item-input" id="country-picker">
                     <select class="selectpicker" id="countries" multiple title="Select country(s)"></select></span>
@@ -58,24 +58,28 @@
             {% for d in data %}
             <div class="result-item">
                 <img class="wine" src="/static/images/wine_glass.png" />
-                <h4 class="output-header">{{d.province}} in {{d.country}}</h4>
+                <h3 class="output-header"> {{d.country}} </h3>
+                {% for w in d.details%}
+                <h4 class="output-header">{{w.province}} in {{d.country}} ({{w.similarity}}% match)</h4>
                 <p class="output-text">Based on your preferences, you should consider visiting <b>
-                        {{d.winery}}</b> and trying their <b>{{d.variety}}</b>.
+                        {{w.winery}}</b> and trying their <b>{{w.variety}}</b>.
                     <br>
-                    A wine reviewer describes this wine to have notes of:
-                    "{{d.review}}"
+                    A wine reviewer has described this wine to have notes of:
+                    "{{w.review}}"
                     <br>
-                    The full review: <span id="dots">...</span>
-                    <span id="more">
-                        Here is the full review
+                    The full review:
+                    <span class="content-new">
+                        "{{w.full_review}}"
                     </span>
-                    <button onclick="showMore()" id="see-more">Read more</button>
+                    <button class="show_hide_new" id="see-more">Read more</button>
                 </p>
+                {% endfor %}
             </div>
             {% endfor %}
             {% endif %}
             {% if data is defined and data == [] %}
-            <h3 style="text-align: 'center'"> We couldn't find anything for that search! Here are some descriptor words
+            <h3 style="text-align: 'center'"> We couldn't find anything for that search! Here are some descriptor
+                words
                 to try searching:
                 <a href="aroma_wheel.html">Aroma Wheel</a>
             </h3>
@@ -89,14 +93,41 @@
     </footer>
     <script>
         const availableFlavors = [
-            "Dry",
-            "Sweet",
-            "Acidic",
-            "Spice",
-            "Fruit",
-            "Vanilla",
-            "Ripe",
-            "Earthy"
+            "floral",
+            "violet",
+            "rose",
+            "dry",
+            "sweet",
+            "semi-sweet",
+            "earthy",
+            "woody",
+            "burnt",
+            "nutty",
+            "fruity",
+            "lemon",
+            "citrus",
+            "berry",
+            "spicy",
+            "chocolate",
+            "fresh",
+            "peach",
+            "stringent",
+            "banana",
+            "cherry",
+            "apple",
+            "ripe",
+            "tropical",
+            "bubbly",
+            "full-bodied",
+            "light-bodied",
+            "medium-bodied",
+            "sour",
+            "oak",
+            "vanilla",
+            "aged",
+            "refreshing",
+            "tart"
+
         ];
         $("#flavors").tagsInput({
             'autocomplete': { source: availableFlavors }
@@ -106,7 +137,7 @@
                         suggested descriptors from the dropdown." );
             $("#flavors_tag").tooltip({
                 position: {
-                    my: "right+100 top", at: "right+100 top", using: function (position, feedback) {
+                    my: "right+20 top", at: "right+20 top", using: function (position, feedback) {
                         $(this).css(position);
                     }
                 }
@@ -133,21 +164,14 @@
         });
 
 
-        function showMore() {
-            var dots = document.getElementById("dots");
-            var moreText = document.getElementById("more");
-            var btnText = document.getElementById("see-more");
-
-            if (dots.style.display === "none") {
-                dots.style.display = "inline";
-                btnText.innerHTML = "Read more";
-                moreText.style.display = "none";
-            } else {
-                dots.style.display = "none";
-                btnText.innerHTML = "Read less";
-                moreText.style.display = "inline";
-            }
-        }
+        $(document).ready(function () {
+            $(".content-new").hide();
+            $(".show_hide_new").on("click", function () {
+                var txt = $(this).prev(".content-new").is(':visible') ? 'Read More' : 'Read Less';
+                $(this).text(txt);
+                $(this).prev('.content-new').slideToggle(100);
+            });
+        });
 
 
 

@@ -33,7 +33,7 @@ def search():
 		data = []
 		output_message = ''
 	else:
-		if len(countries) == 0:
+		if len(countries) == 0 or countries == "No preference":
 			country_text = "anywhere"
 		else:
 			country_text = countries

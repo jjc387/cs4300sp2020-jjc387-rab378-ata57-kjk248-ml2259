@@ -60,9 +60,9 @@
                 <img class="wine" src="/static/images/wine_glass.png" />
                 <h3 class="output-header"> {{d.country}} </h3>
                 {% for w in d.details%}
-                <h4 class="output-header">{{w.province}} in {{d.country}} ({{w.similarity}}% match)</h4>
-                <p class="output-text">Based on your preferences, you should consider visiting <b>
-                        {{w.winery}}</b> and trying their <b>{{w.variety}}</b>.
+                <h4 class="output-header">{{w.province}} ({{w.similarity}}% match)</h4>
+                <p class="output-text">Based on your preferences, you should consider visiting the <b>
+                        {{w.winery}}</b> winery and trying their <b>{{w.variety}}</b>.
                     <br>
                     A wine reviewer has described this wine to have notes of:
                     "{{w.review}}"

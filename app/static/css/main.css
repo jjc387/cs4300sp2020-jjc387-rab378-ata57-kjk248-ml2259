@@ -98,6 +98,24 @@ border: none
   width: 50%;
 }
 
+.output-text{
+    padding-left: 5rem;
+}
+
+.output-header{
+    padding-left: 5rem;
+}
+
+#see-more{
+    border: none;
+    padding: 1rem;
+    background: none;
+    color: #5E1224;
+    text-decoration: underline;
+}
+
+#more {display: none;}
+
 #flavor-form{
     text-align: left;
     width: 100%;

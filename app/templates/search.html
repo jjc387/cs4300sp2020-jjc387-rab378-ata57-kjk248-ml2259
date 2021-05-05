@@ -56,12 +56,21 @@
             {% if data is defined and data|length %}
             <h3 id="result-header">Based on wine reviews by various users, we suggest these destinations:</h3>
             {% for d in data %}
-            <div class="result-item"><img class="wine" src="/static/images/wine_glass.png" />
-                <h4>{{d.province}} in {{d.country}}</h4>
-                <p>Based on your preferences, you should consider visiting <b>
+            <div class="result-item">
+                <img class="wine" src="/static/images/wine_glass.png" />
+                <h4 class="output-header">{{d.province}} in {{d.country}}</h4>
+                <p class="output-text">Based on your preferences, you should consider visiting <b>
                         {{d.winery}}</b> and trying their <b>{{d.variety}}</b>.
-                    Wine reviewers describe this wine to have notes of:
-                    "{{d.review}}"</p>
+                    <br>
+                    A wine reviewer describes this wine to have notes of:
+                    "{{d.review}}"
+                    <br>
+                    The full review: <span id="dots">...</span>
+                    <span id="more">
+                        Here is the full review
+                    </span>
+                    <button onclick="showMore()" id="see-more">Read more</button>
+                </p>
             </div>
             {% endfor %}
             {% endif %}
@@ -124,7 +133,21 @@
         });
 
 
+        function showMore() {
+            var dots = document.getElementById("dots");
+            var moreText = document.getElementById("more");
+            var btnText = document.getElementById("see-more");
 
+            if (dots.style.display === "none") {
+                dots.style.display = "inline";
+                btnText.innerHTML = "Read more";
+                moreText.style.display = "none";
+            } else {
+                dots.style.display = "none";
+                btnText.innerHTML = "Read less";
+                moreText.style.display = "inline";
+            }
+        }
 
 
 
